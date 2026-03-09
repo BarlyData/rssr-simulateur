@@ -85,6 +85,7 @@
         <div class="param-row"><div class="param-label">A — Z</div><input type="range" id="az" min="-100" max="100" step="0.001" value="-31.586"><input type="number" class="pval" id="azv" min="-100" max="100" step="0.001" value="-31.586"></div>
         <div class="param-row"><div class="param-label">Départ θ₁<em>degrés</em></div><input type="range" id="t1start" min="-180" max="180" step="0.1" value="0"><input type="number" class="pval" id="t1startv" min="-180" max="180" step="0.1" value="0"></div>
         <div class="param-row"><div class="param-label">Amplitude<em>degrés</em></div><input type="range" id="amp" min="60" max="180" step="0.1" value="140"><input type="number" class="pval" id="ampv" min="60" max="180" step="0.1" value="140"></div>
+        <div class="param-row"><div class="param-label">Sens rotation<em>+1 anti-horaire / -1 horaire</em></div><input type="range" id="rotdir" min="-1" max="1" step="2" value="1"><input type="number" class="pval" id="rotdirv" min="-1" max="1" step="1" value="1"></div>
       </div>
     </div>
 
@@ -96,7 +97,8 @@
         <div class="param-row"><div class="param-label">o2 — X<em>pivot sortie PS</em></div><input type="range" id="o2x" min="-300" max="300" step="0.001" value="156.219"><input type="number" class="pval" id="o2xv" min="-300" max="300" step="0.001" value="156.219"></div>
         <div class="param-row"><div class="param-label">o2 — Y</div><input type="range" id="o2y" min="-300" max="300" step="0.001" value="220.448"><input type="number" class="pval" id="o2yv" min="-300" max="300" step="0.001" value="220.448"></div>
         <div class="param-row"><div class="param-label">o2 — Z</div><input type="range" id="o2z" min="-300" max="300" step="0.001" value="-121.227"><input type="number" class="pval" id="o2zv" min="-300" max="300" step="0.001" value="-121.227"></div>
-        <div class="param-row"><div class="param-label">Inclin. o2<em>° / axe Z vers -X</em></div><input type="range" id="inc2" min="-30" max="30" step="0.01" value="5.66"><input type="number" class="pval" id="inc2v" min="-30" max="30" step="0.01" value="5.66"></div>
+        <div class="param-row"><div class="param-label">Inclin. o2<em>° dans plan coupe</em></div><input type="range" id="inc2" min="-30" max="30" step="0.01" value="5.48"><input type="number" class="pval" id="inc2v" min="-30" max="30" step="0.01" value="5.48"></div>
+        <div class="param-row"><div class="param-label">Plan coupe o2<em>° Y vers X-</em></div><input type="range" id="plane2" min="0" max="45" step="0.01" value="17.65"><input type="number" class="pval" id="plane2v" min="0" max="45" step="0.01" value="17.65"></div>
       </div>
     </div>
 
@@ -108,7 +110,8 @@
         <div class="param-row"><div class="param-label">o3 — X<em>pivot sortie DS</em></div><input type="range" id="o3x" min="-300" max="300" step="0.001" value="-118.819"><input type="number" class="pval" id="o3xv" min="-300" max="300" step="0.001" value="-118.819"></div>
         <div class="param-row"><div class="param-label">o3 — Y</div><input type="range" id="o3y" min="-300" max="300" step="0.001" value="-229.357"><input type="number" class="pval" id="o3yv" min="-300" max="300" step="0.001" value="-229.357"></div>
         <div class="param-row"><div class="param-label">o3 — Z</div><input type="range" id="o3z" min="-300" max="300" step="0.001" value="174.618"><input type="number" class="pval" id="o3zv" min="-300" max="300" step="0.001" value="174.618"></div>
-        <div class="param-row"><div class="param-label">Inclin. o3<em>° / axe Z vers +X</em></div><input type="range" id="inc3" min="-30" max="30" step="0.01" value="7.18"><input type="number" class="pval" id="inc3v" min="-30" max="30" step="0.01" value="7.18"></div>
+        <div class="param-row"><div class="param-label">Inclin. o3<em>° dans plan coupe</em></div><input type="range" id="inc3" min="-30" max="30" step="0.01" value="6.65"><input type="number" class="pval" id="inc3v" min="-30" max="30" step="0.01" value="6.65"></div>
+        <div class="param-row"><div class="param-label">Plan coupe o3<em>° Y vers X-</em></div><input type="range" id="plane3" min="0" max="45" step="0.01" value="0.39"><input type="number" class="pval" id="plane3v" min="0" max="45" step="0.01" value="0.39"></div>
       </div>
     </div>
 
@@ -206,12 +209,30 @@ function perpToAxis(axis){
   return normalize(cross(a,{x:0,y:1,z:0}));
 }
 
-// Axe de rotation : Z pur incliné dans le plan XZ
-// incl_deg > 0 = vers X négatif (PS), < 0 = vers X positif (DS)
-function makeAxis(incl_deg){
-  // Rotation autour de Y de l'angle d'inclinaison
-  const a = incl_deg * DEG;
-  return normalize({x: -Math.sin(a), y: 0, z: Math.cos(a)});
+// Axes de rotation calculés depuis les plans de coupe Y1/Y2 et inclinaisons
+// Axe o2 (PS) : plan Y1 tourné de 17.65° vers X négatif, inclinaison 5.48° sens horaire
+// Axe o3 (DS) : plan Y2 tourné de 0.39° vers X négatif, inclinaison 6.65° sens anti-horaire
+function makeAxisPS(incl_deg, planeAngle_deg){
+  // Y1 direction (plan de coupe)
+  const pa = -planeAngle_deg * DEG;
+  const Y1 = {x: Math.sin(pa), y: Math.cos(pa), z: 0};
+  // Rotation de Z autour de Y1 de -incl_deg (sens horaire)
+  const Z = {x:0, y:0, z:1};
+  const a = -incl_deg * DEG;
+  const k = normalize(Y1);
+  const result = add(add(scale(Z, Math.cos(a)), scale(cross(k,Z), Math.sin(a))), scale(k, dot(k,Z)*(1-Math.cos(a))));
+  return normalize(result);
+}
+function makeAxisDS(incl_deg, planeAngle_deg){
+  // Y2 direction
+  const pa = -planeAngle_deg * DEG;
+  const Y2 = {x: Math.sin(pa), y: Math.cos(pa), z: 0};
+  // Rotation de Z autour de Y2 de +incl_deg (sens anti-horaire)
+  const Z = {x:0, y:0, z:1};
+  const a = +incl_deg * DEG;
+  const k = normalize(Y2);
+  const result = add(add(scale(Z, Math.cos(a)), scale(cross(k,Z), Math.sin(a))), scale(k, dot(k,Z)*(1-Math.cos(a))));
+  return normalize(result);
 }
 
 // Point sur manivelle autour de l'axe Z : dans le plan XZ
@@ -268,10 +289,11 @@ function getParams(){
     r2: g('r2'), s2: g('s2'),
     O2: {x:g('o2x'), y:g('o2y'), z:g('o2z')},
     O3: {x:g('o3x'), y:g('o3y'), z:g('o3z')},
-    axis2: makeAxis(g('inc2')),
-    axis3: makeAxis(-g('inc3')),
+    axis2: makeAxisPS(g('inc2'), g('plane2')),
+    axis3: makeAxisDS(g('inc3'), g('plane3')),
     t1start: g('t1start'),
     amp: g('amp'),
+    rotdir: g('rotdir'),
   };
 }
 
@@ -282,7 +304,7 @@ function computeCurves(p){
   let prev2=undefined, prev3=undefined;
   for(let i=0;i<=N;i++){
     const frac=i/N;
-    const deg=t1start - frac*amp; // départ → arrivée
+    const deg=t1start + frac*amp*p.rotdir; // départ → arrivée selon sens rotation
     const theta1 = deg*DEG;
     // A tourne autour de Z pur dans le plan XY
     const Ax0 = p.A.x, Ay0 = p.A.y, Az0 = p.A.z;
@@ -505,7 +527,7 @@ function animLoop(){
   if(animT>=1){animT=1;animDir=-1;}
   if(animT<=0){animT=0;animDir=1;}
   const p=getParams();
-  theta1_anim=p.t1start-animT*p.amp;
+  theta1_anim=p.t1start+animT*p.amp*p.rotdir;
   draw();
   animRAF=requestAnimationFrame(animLoop);
 }
@@ -545,9 +567,9 @@ document.getElementById('vue3dBtn').addEventListener('click',()=>{
 // ── SLIDERS BIDIRECTIONNELS ──
 const sliders=[
   ['q','qv'],['ax','axv'],['ay','ayv'],['az','azv'],
-  ['t1start','t1startv'],['amp','ampv'],
-  ['r1','r1v'],['s1','s1v'],['o2x','o2xv'],['o2y','o2yv'],['o2z','o2zv'],['inc2','inc2v'],
-  ['r2','r2v'],['s2','s2v'],['o3x','o3xv'],['o3y','o3yv'],['o3z','o3zv'],['inc3','inc3v'],
+  ['t1start','t1startv'],['amp','ampv'],['rotdir','rotdirv'],
+  ['r1','r1v'],['s1','s1v'],['o2x','o2xv'],['o2y','o2yv'],['o2z','o2zv'],['inc2','inc2v'],['plane2','plane2v'],
+  ['r2','r2v'],['s2','s2v'],['o3x','o3xv'],['o3y','o3yv'],['o3z','o3zv'],['inc3','inc3v'],['plane3','plane3v'],
 ];
 sliders.forEach(([sid,vid])=>{
   const sl=document.getElementById(sid),ni=document.getElementById(vid);
