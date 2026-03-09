@@ -3,892 +3,534 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Simulateur RSSR — Timonerie Essuie-Glace</title>
+<title>Simulateur RSSR — Timonerie Complète PS+DS</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&family=Syne:wght@400;700;800&display=swap');
-
   :root {
-    --bg: #0a0c10;
-    --surface: #111318;
-    --border: #1e2230;
-    --accent: #00d4ff;
-    --accent2: #ff6b35;
-    --accent3: #7fff6b;
-    --text: #c8d0e0;
-    --muted: #4a5268;
-    --manivelle: #00d4ff;
-    --bielle: #ff9f45;
-    --balancier: #7fff6b;
+    --bg: #0a0c10; --surface: #111318; --border: #1e2230;
+    --accent: #00d4ff; --accent2: #ff6b35; --accent3: #7fff6b;
+    --text: #c8d0e0; --muted: #4a5268;
+    --moteur: #00d4ff; --bielle: #ff9f45; --ps: #7fff6b; --ds: #ff6b8a;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  header {
-    padding: 18px 28px 14px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: baseline;
-    gap: 16px;
-    background: var(--surface);
-  }
-  header h1 {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 18px;
-    color: #fff;
-    letter-spacing: -0.5px;
-  }
-  header span {
-    color: var(--accent);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
-
-  .main {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-    height: calc(100vh - 57px);
-  }
-
-  /* ── PANNEAU GAUCHE ── */
-  .panel {
-    width: 310px;
-    min-width: 310px;
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    overflow-y: auto;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  .section-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 8px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .param-group { display: flex; flex-direction: column; gap: 8px; }
-
-  .param-row {
-    display: grid;
-    grid-template-columns: 130px 1fr 42px;
-    align-items: center;
-    gap: 8px;
-  }
-  .param-label {
-    color: var(--text);
-    font-size: 11px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .param-label em {
-    font-style: normal;
-    font-size: 10px;
-    color: var(--muted);
-    display: block;
-  }
-
-  input[type=range] {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 3px;
-    background: var(--border);
-    border-radius: 2px;
-    outline: none;
-    cursor: pointer;
-  }
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 12px; height: 12px;
-    border-radius: 50%;
-    background: var(--accent);
-    border: 2px solid var(--bg);
-    cursor: pointer;
-    transition: transform .15s;
-  }
+  body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 12px; min-height: 100vh; display: flex; flex-direction: column; }
+  header { padding: 14px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: baseline; gap: 16px; background: var(--surface); }
+  header h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; color: #fff; }
+  header span { color: var(--accent); font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
+  .main { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 49px); }
+  .panel { width: 300px; min-width: 300px; background: var(--surface); border-right: 1px solid var(--border); overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+  .section-title { font-family: 'Syne', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; padding-bottom: 5px; border-bottom: 1px solid var(--border); }
+  .param-group { display: flex; flex-direction: column; gap: 6px; }
+  .param-row { display: grid; grid-template-columns: 110px 1fr 52px; align-items: center; gap: 6px; }
+  .param-label { color: var(--text); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .param-label em { font-style: normal; font-size: 9px; color: var(--muted); display: block; }
+  input[type=range] { -webkit-appearance: none; width: 100%; height: 3px; background: var(--border); border-radius: 2px; outline: none; cursor: pointer; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 11px; height: 11px; border-radius: 50%; background: var(--accent); border: 2px solid var(--bg); cursor: pointer; transition: transform .15s; }
   input[type=range]:hover::-webkit-slider-thumb { transform: scale(1.3); }
-
-  input[type=number].param-val {
-    text-align: right;
-    color: var(--accent);
-    font-size: 11px;
-    font-weight: 600;
-    width: 52px;
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: 3px;
-    padding: 2px 4px;
-    font-family: 'JetBrains Mono', monospace;
-    outline: none;
-    cursor: text;
-    transition: border-color .15s, background .15s;
-    -moz-appearance: textfield;
-  }
-  input[type=number].param-val::-webkit-inner-spin-button,
-  input[type=number].param-val::-webkit-outer-spin-button { -webkit-appearance: none; }
-  input[type=number].param-val:hover {
-    border-color: var(--border);
-    background: var(--bg);
-  }
-  input[type=number].param-val:focus {
-    border-color: var(--accent);
-    background: var(--bg);
-  }
-
-  /* Sous-groupes colorés */
-  .grp-manivelle input[type=number].param-val { color: var(--manivelle); }
-  .grp-manivelle input[type=number].param-val:focus { border-color: var(--manivelle); }
-  .grp-manivelle input[type=range]::-webkit-slider-thumb { background: var(--manivelle); }
-  .grp-balancier input[type=number].param-val { color: var(--balancier); }
-  .grp-balancier input[type=number].param-val:focus { border-color: var(--balancier); }
-  .grp-balancier input[type=range]::-webkit-slider-thumb { background: var(--balancier); }
-  .grp-bielle input[type=number].param-val { color: var(--bielle); }
-  .grp-bielle input[type=number].param-val:focus { border-color: var(--bielle); }
+  input[type=number].pval { text-align: right; color: var(--accent); font-size: 10px; font-weight: 600; width: 52px; background: transparent; border: 1px solid transparent; border-radius: 3px; padding: 2px 3px; font-family: 'JetBrains Mono', monospace; outline: none; cursor: text; -moz-appearance: textfield; }
+  input[type=number].pval::-webkit-inner-spin-button, input[type=number].pval::-webkit-outer-spin-button { -webkit-appearance: none; }
+  input[type=number].pval:hover { border-color: var(--border); background: var(--bg); }
+  input[type=number].pval:focus { border-color: var(--accent); background: var(--bg); }
+  .grp-moteur input[type=number].pval, .grp-moteur input[type=range]::-webkit-slider-thumb { color: var(--moteur); background: var(--moteur); }
+  .grp-moteur input[type=number].pval { color: var(--moteur); }
+  .grp-ps input[type=number].pval { color: var(--ps); }
+  .grp-ps input[type=range]::-webkit-slider-thumb { background: var(--ps); }
+  .grp-ds input[type=number].pval { color: var(--ds); }
+  .grp-ds input[type=range]::-webkit-slider-thumb { background: var(--ds); }
+  .grp-bielle input[type=number].pval { color: var(--bielle); }
   .grp-bielle input[type=range]::-webkit-slider-thumb { background: var(--bielle); }
-
-  /* ── STATS ── */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-  .stat-card {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 10px 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-  .stat-label {
-    font-size: 9px;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    color: var(--muted);
-  }
-  .stat-value {
-    font-family: 'Syne', sans-serif;
-    font-size: 20px;
-    font-weight: 800;
-    color: #fff;
-  }
-  .stat-unit { font-size: 11px; color: var(--muted); }
-
-  .warn-box {
-    background: rgba(255, 80, 80, 0.08);
-    border: 1px solid rgba(255,80,80,0.3);
-    border-radius: 6px;
-    padding: 8px 12px;
-    color: #ff6060;
-    font-size: 11px;
-    display: none;
-  }
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .stat-card { background: var(--bg); border: 1px solid var(--border); border-radius: 5px; padding: 8px 10px; }
+  .stat-label { font-size: 8px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800; color: #fff; }
+  .stat-unit { font-size: 9px; color: var(--muted); }
+  .stat-ps { border-left: 2px solid var(--ps); }
+  .stat-ds { border-left: 2px solid var(--ds); }
+  .warn-box { background: rgba(255,80,80,0.08); border: 1px solid rgba(255,80,80,0.3); border-radius: 5px; padding: 7px 10px; color: #ff6060; font-size: 10px; display: none; }
   .warn-box.visible { display: block; }
-
-  /* ── ZONE 3D + COURBE ── */
-  .right {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  canvas#c3d {
-    flex: 1;
-    display: block;
-    width: 100%;
-    cursor: grab;
-  }
+  .right { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  canvas#c3d { flex: 1; display: block; width: 100%; cursor: grab; }
   canvas#c3d:active { cursor: grabbing; }
-
-  .curve-panel {
-    height: 140px;
-    border-top: 1px solid var(--border);
-    background: var(--surface);
-    padding: 10px 16px 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .curve-header {
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  canvas#ccurve { width: 100%; flex: 1; }
-
-  /* LÉGENDE */
-  .legend {
-    display: flex;
-    gap: 16px;
-    padding: 4px 0 0;
-  }
-  .leg-item { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--muted); }
-  .leg-dot { width: 8px; height: 8px; border-radius: 50%; }
-
-  /* Bouton animation */
-  .anim-btn {
-    background: var(--accent);
-    color: var(--bg);
-    border: none;
-    border-radius: 4px;
-    padding: 8px 16px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: opacity .2s;
-    width: 100%;
-    margin-top: 4px;
-  }
+  .curves { height: 160px; border-top: 1px solid var(--border); background: var(--surface); display: flex; }
+  .curve-box { flex: 1; padding: 8px 12px 6px; display: flex; flex-direction: column; gap: 3px; border-right: 1px solid var(--border); }
+  .curve-box:last-child { border-right: none; }
+  .curve-header { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+  canvas.ccurve { width: 100%; flex: 1; }
+  .anim-btn { background: var(--accent); color: var(--bg); border: none; border-radius: 4px; padding: 7px 12px; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 2px; }
   .anim-btn:hover { opacity: .85; }
   .anim-btn.active { background: var(--accent2); }
+  .export-btn { background: transparent; color: var(--accent3); border: 1px solid var(--accent3); border-radius: 4px; padding: 7px 12px; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 4px; }
+  .export-btn:hover { background: rgba(127,255,107,0.08); }
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; }
+  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 9px; color: var(--muted); }
+  .leg-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .info-row { font-size: 9px; color: var(--muted); padding: 3px 0; border-top: 1px solid var(--border); margin-top: 2px; }
+  .info-row span { color: var(--accent); }
 </style>
 </head>
 <body>
-
 <header>
-  <h1>Mécanisme RSSR</h1>
-  <span>Timonerie Essuie-Glace 3D</span>
+  <h1>Timonerie RSSR — PS + DS</h1>
+  <span>Simulation 3D complète</span>
 </header>
-
 <div class="main">
-  <!-- PANNEAU PARAMÈTRES -->
   <div class="panel">
 
     <div>
-      <div class="section-title">Longueurs des barres</div>
-      <div class="param-group">
-        <div class="param-row grp-manivelle">
-          <div class="param-label">Manivelle R1<em>longueur entrée</em></div>
-          <input type="range" id="r1" min="10" max="240" step="1" value="50">
-          <input type="number" class="param-val" id="r1v" min="10" max="240" step="1" value="50">
-        </div>
-        <div class="param-row grp-balancier">
-          <div class="param-label">Balancier R2<em>longueur sortie</em></div>
-          <input type="range" id="r2" min="10" max="360" step="1" value="100">
-          <input type="number" class="param-val" id="r2v" min="10" max="360" step="1" value="100">
-        </div>
-        <div class="param-row grp-bielle">
-          <div class="param-label">Bielle L<em>couplage sphérique</em></div>
-          <input type="range" id="bl" min="30" max="600" step="1" value="308">
-          <input type="number" class="param-val" id="blv" min="30" max="600" step="1" value="308">
-        </div>
+      <div class="section-title">Manivelle Moteur q</div>
+      <div class="param-group grp-moteur">
+        <div class="param-row"><div class="param-label">Longueur q<em>mm</em></div><input type="range" id="q" min="10" max="120" step="0.1" value="45"><input type="number" class="pval" id="qv" min="10" max="120" step="0.1" value="45"></div>
+        <div class="param-row"><div class="param-label">A — X<em>rotule manivelle</em></div><input type="range" id="ax" min="-100" max="100" step="0.001" value="19.169"><input type="number" class="pval" id="axv" min="-100" max="100" step="0.001" value="19.169"></div>
+        <div class="param-row"><div class="param-label">A — Y</div><input type="range" id="ay" min="-100" max="100" step="0.001" value="20.318"><input type="number" class="pval" id="ayv" min="-100" max="100" step="0.001" value="20.318"></div>
+        <div class="param-row"><div class="param-label">A — Z</div><input type="range" id="az" min="-100" max="100" step="0.001" value="-31.586"><input type="number" class="pval" id="azv" min="-100" max="100" step="0.001" value="-31.586"></div>
+        <div class="param-row"><div class="param-label">Départ θ₁<em>degrés</em></div><input type="range" id="t1start" min="90" max="180" step="0.1" value="146.1"><input type="number" class="pval" id="t1startv" min="90" max="180" step="0.1" value="146.1"></div>
+        <div class="param-row"><div class="param-label">Amplitude<em>degrés</em></div><input type="range" id="amp" min="60" max="180" step="0.1" value="140"><input type="number" class="pval" id="ampv" min="60" max="180" step="0.1" value="140"></div>
       </div>
     </div>
 
     <div>
-      <div class="section-title">Pivot Manivelle — O1</div>
-      <div class="param-group grp-manivelle">
-        <div class="param-row">
-          <div class="param-label">X<em>position X</em></div>
-          <input type="range" id="o1x" min="-300" max="300" step="1" value="0">
-          <input type="number" class="param-val" id="o1xv" min="-300" max="300" step="1" value="0">
-        </div>
-        <div class="param-row">
-          <div class="param-label">Y<em>position Y</em></div>
-          <input type="range" id="o1y" min="-300" max="300" step="1" value="0">
-          <input type="number" class="param-val" id="o1yv" min="-300" max="300" step="1" value="0">
-        </div>
-        <div class="param-row">
-          <div class="param-label">Z<em>position Z</em></div>
-          <input type="range" id="o1z" min="-200" max="200" step="1" value="0">
-          <input type="number" class="param-val" id="o1zv" min="-200" max="200" step="1" value="0">
-        </div>
-        <div style="font-size:10px;color:var(--muted);padding:4px 0 2px;border-top:1px solid var(--border);margin-top:2px;">
-          Axe de rotation : <span style="color:var(--manivelle)">Y pur</span> — fixe
-        </div>
-        <input type="hidden" id="a1x" value="0">
-        <input type="hidden" id="a1xv" value="0">
-        <input type="hidden" id="a1z" value="0">
-        <input type="hidden" id="a1zv" value="0">
+      <div class="section-title">Côté PS — Passager</div>
+      <div class="param-group grp-ps">
+        <div class="param-row"><div class="param-label">Bielle r1<em>mm</em></div><input type="range" id="r1" min="100" max="600" step="0.1" value="304.1"><input type="number" class="pval" id="r1v" min="100" max="600" step="0.1" value="304.1"></div>
+        <div class="param-row"><div class="param-label">Maniv. s1<em>mm</em></div><input type="range" id="s1" min="10" max="150" step="0.1" value="67"><input type="number" class="pval" id="s1v" min="10" max="150" step="0.1" value="67"></div>
+        <div class="param-row"><div class="param-label">o2 — X<em>pivot sortie PS</em></div><input type="range" id="o2x" min="-300" max="300" step="0.001" value="156.219"><input type="number" class="pval" id="o2xv" min="-300" max="300" step="0.001" value="156.219"></div>
+        <div class="param-row"><div class="param-label">o2 — Y</div><input type="range" id="o2y" min="-300" max="300" step="0.001" value="220.448"><input type="number" class="pval" id="o2yv" min="-300" max="300" step="0.001" value="220.448"></div>
+        <div class="param-row"><div class="param-label">o2 — Z</div><input type="range" id="o2z" min="-300" max="300" step="0.001" value="-121.227"><input type="number" class="pval" id="o2zv" min="-300" max="300" step="0.001" value="-121.227"></div>
+        <div class="param-row"><div class="param-label">Inclin. o2<em>° / axe Z vers -X</em></div><input type="range" id="inc2" min="-30" max="30" step="0.01" value="5.66"><input type="number" class="pval" id="inc2v" min="-30" max="30" step="0.01" value="5.66"></div>
       </div>
     </div>
 
     <div>
-      <div class="section-title">Pivot Balancier — O2</div>
-      <div class="param-group grp-balancier">
-        <div class="param-row">
-          <div class="param-label">X<em>position X</em></div>
-          <input type="range" id="o2x" min="-300" max="300" step="1" value="180">
-          <input type="number" class="param-val" id="o2xv" min="-300" max="300" step="1" value="180">
-        </div>
-        <div class="param-row">
-          <div class="param-label">Y<em>position Y</em></div>
-          <input type="range" id="o2y" min="-300" max="300" step="1" value="30">
-          <input type="number" class="param-val" id="o2yv" min="-300" max="300" step="1" value="30">
-        </div>
-        <div class="param-row">
-          <div class="param-label">Z<em>position Z</em></div>
-          <input type="range" id="o2z" min="-200" max="200" step="1" value="20">
-          <input type="number" class="param-val" id="o2zv" min="-200" max="200" step="1" value="20">
-        </div>
-        <div class="param-row">
-          <div class="param-label">βx axe rot.<em>inclinaison X</em></div>
-          <input type="range" id="b1x" min="-90" max="90" step="1" value="15">
-          <input type="number" class="param-val" id="b1xv" min="-90" max="90" step="1" value="15">
-        </div>
-        <div class="param-row">
-          <div class="param-label">βz axe rot.<em>inclinaison Z</em></div>
-          <input type="range" id="b1z" min="-90" max="90" step="1" value="10">
-          <input type="number" class="param-val" id="b1zv" min="-90" max="90" step="1" value="10">
-        </div>
+      <div class="section-title">Côté DS — Conducteur</div>
+      <div class="param-group grp-ds">
+        <div class="param-row"><div class="param-label">Bielle r2<em>mm</em></div><input type="range" id="r2" min="100" max="600" step="0.1" value="308.7"><input type="number" class="pval" id="r2v" min="100" max="600" step="0.1" value="308.7"></div>
+        <div class="param-row"><div class="param-label">Maniv. s2<em>mm</em></div><input type="range" id="s2" min="10" max="150" step="0.1" value="62.7"><input type="number" class="pval" id="s2v" min="10" max="150" step="0.1" value="62.7"></div>
+        <div class="param-row"><div class="param-label">o3 — X<em>pivot sortie DS</em></div><input type="range" id="o3x" min="-300" max="300" step="0.001" value="-118.819"><input type="number" class="pval" id="o3xv" min="-300" max="300" step="0.001" value="-118.819"></div>
+        <div class="param-row"><div class="param-label">o3 — Y</div><input type="range" id="o3y" min="-300" max="300" step="0.001" value="-229.357"><input type="number" class="pval" id="o3yv" min="-300" max="300" step="0.001" value="-229.357"></div>
+        <div class="param-row"><div class="param-label">o3 — Z</div><input type="range" id="o3z" min="-300" max="300" step="0.001" value="174.618"><input type="number" class="pval" id="o3zv" min="-300" max="300" step="0.001" value="174.618"></div>
+        <div class="param-row"><div class="param-label">Inclin. o3<em>° / axe Z vers +X</em></div><input type="range" id="inc3" min="-30" max="30" step="0.01" value="7.18"><input type="number" class="pval" id="inc3v" min="-30" max="30" step="0.01" value="7.18"></div>
       </div>
     </div>
 
     <div>
       <div class="section-title">Animation</div>
       <button class="anim-btn" id="animBtn">▶ Lancer l'animation</button>
+      <button class="export-btn" id="exportBtn">⬇ Exporter CSV</button>
     </div>
 
     <div>
       <div class="section-title">Résultats</div>
-      <div id="warnBox" class="warn-box">⚠ Bielle hors portée — mécanisme bloqué</div>
+      <div id="warnBox" class="warn-box">⚠ Mécanisme bloqué — bielle hors portée</div>
       <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-label">Angle sortie</div>
-          <div class="stat-value" id="sAngle">—</div>
+        <div class="stat-card stat-ps">
+          <div class="stat-label">Angle PS actuel</div>
+          <div class="stat-value" id="sAnglePS">—</div>
           <div class="stat-unit">degrés</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Balayage Δθ</div>
-          <div class="stat-value" id="sSweep">—</div>
+        <div class="stat-card stat-ds">
+          <div class="stat-label">Angle DS actuel</div>
+          <div class="stat-value" id="sAngleDS">—</div>
           <div class="stat-unit">degrés</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">θ min</div>
-          <div class="stat-value" id="sMin">—</div>
+        <div class="stat-card stat-ps">
+          <div class="stat-label">Balayage PS Δθ</div>
+          <div class="stat-value" id="sSweepPS">—</div>
           <div class="stat-unit">degrés</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">θ max</div>
-          <div class="stat-value" id="sMax">—</div>
+        <div class="stat-card stat-ds">
+          <div class="stat-label">Balayage DS Δθ</div>
+          <div class="stat-value" id="sSweepDS">—</div>
+          <div class="stat-unit">degrés</div>
+        </div>
+        <div class="stat-card stat-ps">
+          <div class="stat-label">PS min / max</div>
+          <div class="stat-value" id="sRangePS">—</div>
+          <div class="stat-unit">degrés</div>
+        </div>
+        <div class="stat-card stat-ds">
+          <div class="stat-label">DS min / max</div>
+          <div class="stat-value" id="sRangeDS">—</div>
           <div class="stat-unit">degrés</div>
         </div>
       </div>
+      <div class="info-row">θ₁ = <span id="infoT1">—</span> | PS: <span id="infoPS">—</span> | DS: <span id="infoDS">—</span></div>
     </div>
 
     <div>
       <div class="legend">
-        <div class="leg-item"><div class="leg-dot" style="background:var(--manivelle)"></div>Manivelle</div>
-        <div class="leg-item"><div class="leg-dot" style="background:var(--bielle)"></div>Bielle</div>
-        <div class="leg-item"><div class="leg-dot" style="background:var(--balancier)"></div>Balancier</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--moteur)"></div>Maniv. q</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--bielle)"></div>Bielles</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--ps)"></div>PS</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--ds)"></div>DS</div>
       </div>
     </div>
 
   </div>
 
-  <!-- ZONE 3D + COURBE -->
   <div class="right">
     <canvas id="c3d"></canvas>
-    <div class="curve-panel">
-      <div class="curve-header">θ sortie (°) en fonction de θ entrée (°) — oscillement 146,1° → 6,1°</div>
-      <canvas id="ccurve"></canvas>
+    <div class="curves">
+      <div class="curve-box">
+        <div class="curve-header" style="color:var(--ps)">θ sortie PS (°) vs θ entrée (°)</div>
+        <canvas class="ccurve" id="ccurvePS"></canvas>
+      </div>
+      <div class="curve-box">
+        <div class="curve-header" style="color:var(--ds)">θ sortie DS (°) vs θ entrée (°)</div>
+        <canvas class="ccurve" id="ccurveDS"></canvas>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-// ════════════════════════════════════════════════════════════
-//  MATHS 3D — MÉCANISME RSSR
-// ════════════════════════════════════════════════════════════
-
 const DEG = Math.PI / 180;
-const THETA1_START = 146.1; // position départ manivelle (degrés)
-const THETA1_END   = 6.1;   // position arrivée manivelle (degrés)
 
-function vec3(x,y,z){ return {x,y,z}; }
-function add(a,b){ return {x:a.x+b.x, y:a.y+b.y, z:a.z+b.z}; }
-function sub(a,b){ return {x:a.x-b.x, y:a.y-b.y, z:a.z-b.z}; }
-function scale(a,s){ return {x:a.x*s, y:a.y*s, z:a.z*s}; }
-function dot(a,b){ return a.x*b.x + a.y*b.y + a.z*b.z; }
-function cross(a,b){ return {x:a.y*b.z-a.z*b.y, y:a.z*b.x-a.x*b.z, z:a.x*b.y-a.y*b.x}; }
-function norm(a){ return Math.sqrt(dot(a,a)); }
-function normalize(a){ const n=norm(a); return scale(a,1/n); }
-
-// Rotation autour d'un axe arbitraire (Rodrigues)
-function rotAxis(v, axis, theta){
-  const k = normalize(axis);
-  const c = Math.cos(theta), s = Math.sin(theta);
-  return add(add(scale(v,c), scale(cross(k,v),s)), scale(k, dot(k,v)*(1-c)));
+// ── MATHS 3D ──
+function add(a,b){return{x:a.x+b.x,y:a.y+b.y,z:a.z+b.z}}
+function sub(a,b){return{x:a.x-b.x,y:a.y-b.y,z:a.z-b.z}}
+function scale(a,s){return{x:a.x*s,y:a.y*s,z:a.z*s}}
+function dot(a,b){return a.x*b.x+a.y*b.y+a.z*b.z}
+function cross(a,b){return{x:a.y*b.z-a.z*b.y,y:a.z*b.x-a.x*b.z,z:a.x*b.y-a.y*b.x}}
+function norm(a){return Math.sqrt(dot(a,a))}
+function normalize(a){const n=norm(a);return scale(a,1/n)}
+function rotAxis(v,axis,theta){
+  const k=normalize(axis),c=Math.cos(theta),s=Math.sin(theta);
+  return add(add(scale(v,c),scale(cross(k,v),s)),scale(k,dot(k,v)*(1-c)));
 }
-
-// Axe de rotation du pivot = Y par défaut, incliné par αx puis αz
-function pivotAxis(ax_deg, az_deg){
-  let ax = {x:0,y:1,z:0};
-  ax = rotAxis(ax, {x:1,y:0,z:0}, ax_deg*DEG);
-  ax = rotAxis(ax, {x:0,y:0,z:1}, az_deg*DEG);
-  return ax;
-}
-
-// Point A sur la manivelle : O1 + R1 * rotate(perp(axis1), axis1, theta)
 function perpToAxis(axis){
-  // Trouve un vecteur perpendiculaire
-  const a = normalize(axis);
-  if(Math.abs(a.x) < 0.9) return normalize(cross(a,{x:1,y:0,z:0}));
+  const a=normalize(axis);
+  if(Math.abs(a.x)<0.9)return normalize(cross(a,{x:1,y:0,z:0}));
   return normalize(cross(a,{x:0,y:1,z:0}));
 }
 
-function crankPoint(O1, axis1, R1, theta){
-  const perp = perpToAxis(axis1);
-  const rotated = rotAxis(perp, axis1, theta);
-  return add(O1, scale(rotated, R1));
+// Axe de rotation : Z pur incliné dans le plan XZ
+// incl_deg > 0 = vers X négatif (PS), < 0 = vers X positif (DS)
+function makeAxis(incl_deg){
+  // Rotation autour de Y de l'angle d'inclinaison
+  const a = incl_deg * DEG;
+  return normalize({x: -Math.sin(a), y: 0, z: Math.cos(a)});
 }
 
-// Résoudre θ2 : trouver l'angle de rotation du balancier tel que |AB|=L
-// A=crankPoint(O1,axis1,R1,theta1), B=crankPoint(O2,axis2,R2,theta2)
-// |A-B|² = L²
-// On développe B = O2 + R2*(cos(t2)*perp2 + sin(t2)*cross(axis2_norm, perp2))
-// On pose f(t2) = |A-B|² - L² = 0 → résolution par dichotomie sur [0,2π]
-function solveTheta2(O1, axis1, R1, theta1, O2, axis2, R2, L_bielle, prevTheta2){
-  const A = crankPoint(O1, axis1, R1, theta1);
-  const perp2 = perpToAxis(axis2);
-  const perp2b = cross(normalize(axis2), perp2);
+// Point sur manivelle autour de l'axe Z : dans le plan XZ
+function motorPoint(q_len, theta_deg){
+  // Axe Z pur, perp = X
+  const t = theta_deg * DEG;
+  return {x: q_len*Math.cos(t), y: 0, z: -q_len*Math.sin(t)};
+  // Note: on utilise le point A défini explicitement dans getParams
+}
 
-  function dist2(t2){
-    const B = add(O2, add(scale(perp2, R2*Math.cos(t2)), scale(perp2b, R2*Math.sin(t2))));
+// Résolution θ_out pour une liaison RSSR
+function solveOutput(A, O_out, axis_out, R_out, L_bielle, prevT){
+  const perp = perpToAxis(axis_out);
+  const perpb = cross(normalize(axis_out), perp);
+  function dist2(t){
+    const B = add(O_out, add(scale(perp, R_out*Math.cos(t)), scale(perpb, R_out*Math.sin(t))));
     const d = sub(A, B);
     return dot(d,d);
   }
-
-  const L2 = L_bielle * L_bielle;
-  // Scan pour trouver des passages
+  const L2 = L_bielle*L_bielle;
   const N = 720;
-  let t = prevTheta2 !== undefined ? prevTheta2 - Math.PI/4 : 0;
-  let best = null, bestDelta = Infinity;
-
-  // Cherche racine proche de prevTheta2
-  let lastVal = dist2(t) - L2;
+  let t = prevT !== undefined ? prevT - Math.PI/4 : 0;
+  let best=null, bestDelta=Infinity, lastVal=dist2(t)-L2;
   for(let i=0;i<N;i++){
-    const t2 = t + (2*Math.PI/N)*i;
-    const val = dist2(t2) - L2;
-    if(lastVal * val < 0){
-      // dichotomie
+    const t2 = t+(2*Math.PI/N)*i;
+    const val = dist2(t2)-L2;
+    if(lastVal*val<0){
       let lo=t2-2*Math.PI/N, hi=t2;
-      for(let k=0;k<40;k++){
-        const m=(lo+hi)/2;
-        if((dist2(m)-L2)*(dist2(lo)-L2)<0) hi=m; else lo=m;
-      }
-      const sol = (lo+hi)/2;
-      const delta = prevTheta2!==undefined ? Math.abs(sol-prevTheta2) : Math.abs(sol);
-      const dAdjusted = Math.min(delta, 2*Math.PI - delta);
-      if(dAdjusted < bestDelta){ bestDelta=dAdjusted; best=sol; }
+      for(let k=0;k<40;k++){const m=(lo+hi)/2;if((dist2(m)-L2)*(dist2(lo)-L2)<0)hi=m;else lo=m;}
+      const sol=(lo+hi)/2;
+      const delta=prevT!==undefined?Math.abs(sol-prevT):Math.abs(sol);
+      const dAdj=Math.min(delta,2*Math.PI-delta);
+      if(dAdj<bestDelta){bestDelta=dAdj;best=sol;}
     }
     lastVal=val;
   }
-  return best; // null si hors portée
+  return best;
 }
 
-// Calcule la courbe θ2(θ1) sur la plage d'oscillement (146.1° → 6.1°)
-function computeCurve(params){
-  const {O1,axis1,R1,O2,axis2,R2,L_bielle} = params;
-  const pts = [];
-  let prev = undefined;
-  const N = 200; // points sur la plage
+// Point B sur manivelle de sortie
+function outputPoint(O_out, axis_out, R_out, t_rad){
+  const perp = perpToAxis(axis_out);
+  const perpb = cross(normalize(axis_out), perp);
+  return add(O_out, add(scale(perp, R_out*Math.cos(t_rad)), scale(perpb, R_out*Math.sin(t_rad))));
+}
+
+// ── PARAMÈTRES ──
+function getParams(){
+  const g = id => parseFloat(document.getElementById(id).value);
+  return {
+    A: {x:g('ax'), y:g('ay'), z:g('az')},
+    q: g('q'),
+    r1: g('r1'), s1: g('s1'),
+    r2: g('r2'), s2: g('s2'),
+    O2: {x:g('o2x'), y:g('o2y'), z:g('o2z')},
+    O3: {x:g('o3x'), y:g('o3y'), z:g('o3z')},
+    axis2: makeAxis(g('inc2')),
+    axis3: makeAxis(-g('inc3')),
+    t1start: g('t1start'),
+    amp: g('amp'),
+  };
+}
+
+// ── COURBE ──
+function computeCurves(p){
+  const {A,r1,s1,r2,s2,O2,O3,axis2,axis3,t1start,amp} = p;
+  const pts=[], N=200;
+  let prev2=undefined, prev3=undefined;
   for(let i=0;i<=N;i++){
-    const frac = i/N;
-    const deg = THETA1_START + frac*(THETA1_END - THETA1_START);
-    const t1 = deg*DEG;
-    const t2 = solveTheta2(O1,axis1,R1,t1, O2,axis2,R2,L_bielle, prev);
-    pts.push({t1:deg, t2: t2!==null ? t2/DEG : null});
-    if(t2!==null) prev=t2;
+    const frac=i/N;
+    const deg=t1start - frac*amp; // départ → arrivée
+    const t2=solveOutput(A,O2,axis2,s1,r1,prev2);
+    const t3=solveOutput(A,O3,axis3,s2,r2,prev3);
+    // On résout avec le vrai A (fixe pour l'instant — manivelle moteur)
+    // A varie avec theta1 : on recalcule
+    const theta1 = deg*DEG;
+    // A est le point d'accroche de q autour de o1 axe Z
+    const Areal = {
+      x: p.q * Math.cos(theta1),
+      y: 0,
+      z: -p.q * Math.sin(theta1)
+    };
+    const t2r = solveOutput(Areal,O2,axis2,s1,r1,prev2);
+    const t3r = solveOutput(Areal,O3,axis3,s2,r2,prev3);
+    pts.push({deg, t2: t2r!==null?t2r/DEG:null, t3: t3r!==null?t3r/DEG:null});
+    if(t2r!==null) prev2=t2r;
+    if(t3r!==null) prev3=t3r;
   }
   return pts;
 }
 
-// ════════════════════════════════════════════════════════════
-//  LECTURE DES PARAMÈTRES
-// ════════════════════════════════════════════════════════════
-
-function getParams(){
-  const g = id => parseFloat(document.getElementById(id).value);
-  const O1 = vec3(g('o1x'), g('o1y'), g('o1z'));
-  const O2 = vec3(g('o2x'), g('o2y'), g('o2z'));
-  const axis1 = pivotAxis(g('a1x'), g('a1z'));
-  const axis2 = pivotAxis(g('b1x'), g('b1z'));
-  return { O1, O2, axis1, axis2, R1: g('r1'), R2: g('r2'), L_bielle: g('bl') };
-}
-
-// ════════════════════════════════════════════════════════════
-//  RENDU 3D CANVAS (projection isométrique + rotation souris)
-// ════════════════════════════════════════════════════════════
-
+// ── RENDU 3D ──
 const canvas3d = document.getElementById('c3d');
 const ctx3d = canvas3d.getContext('2d');
-let rotX = 0.45, rotY = -0.3;
-let isDragging=false, lastMX=0, lastMY=0;
-
-canvas3d.addEventListener('mousedown', e=>{ isDragging=true; lastMX=e.clientX; lastMY=e.clientY; });
-canvas3d.addEventListener('mousemove', e=>{
-  if(!isDragging) return;
-  rotY += (e.clientX-lastMX)*0.01;
-  rotX += (e.clientY-lastMY)*0.01;
-  lastMX=e.clientX; lastMY=e.clientY;
-  draw();
-});
+let rotX=0.35, rotY=-0.4, isDragging=false, lastMX=0, lastMY=0;
+canvas3d.addEventListener('mousedown',e=>{isDragging=true;lastMX=e.clientX;lastMY=e.clientY;});
+canvas3d.addEventListener('mousemove',e=>{if(!isDragging)return;rotY+=(e.clientX-lastMX)*0.01;rotX+=(e.clientY-lastMY)*0.01;lastMX=e.clientX;lastMY=e.clientY;draw();});
 window.addEventListener('mouseup',()=>isDragging=false);
 
-// Touch support
-canvas3d.addEventListener('touchstart',e=>{ const t=e.touches[0]; isDragging=true; lastMX=t.clientX; lastMY=t.clientY; });
-canvas3d.addEventListener('touchmove',e=>{ if(!isDragging)return; const t=e.touches[0];
-  rotY+=(t.clientX-lastMX)*0.01; rotX+=(t.clientY-lastMY)*0.01;
-  lastMX=t.clientX; lastMY=t.clientY; draw(); e.preventDefault(); },{passive:false});
-canvas3d.addEventListener('touchend',()=>isDragging=false);
-
-function project(p, cx, cy, scale){
-  // Rotation autour de Y puis X
-  const ry = rotY, rx = rotX;
-  let x=p.x, y=p.y, z=p.z;
-  // Rot Y
-  let tx=x*Math.cos(ry)+z*Math.sin(ry), tz=-x*Math.sin(ry)+z*Math.cos(ry);
-  x=tx; z=tz;
-  // Rot X
-  let ty=y*Math.cos(rx)-z*Math.sin(rx), tz2=y*Math.sin(rx)+z*Math.cos(rx);
-  y=ty; z=tz2;
-  return { sx: cx + x*scale, sy: cy - y*scale, z: z };
+function project(p,cx,cy,sc){
+  let x=p.x,y=p.y,z=p.z;
+  let tx=x*Math.cos(rotY)+z*Math.sin(rotY),tz=-x*Math.sin(rotY)+z*Math.cos(rotY);x=tx;z=tz;
+  let ty=y*Math.cos(rotX)-z*Math.sin(rotX);y=ty;
+  return{sx:cx+x*sc,sy:cy-y*sc};
+}
+function line3d(a,b,cx,cy,sc,color,lw,dash=[]){
+  const pa=project(a,cx,cy,sc),pb=project(b,cx,cy,sc);
+  ctx3d.save();ctx3d.strokeStyle=color;ctx3d.lineWidth=lw;ctx3d.setLineDash(dash);
+  ctx3d.beginPath();ctx3d.moveTo(pa.sx,pa.sy);ctx3d.lineTo(pb.sx,pb.sy);ctx3d.stroke();ctx3d.restore();
+}
+function dot3d(p,cx,cy,sc,color,r){
+  const pp=project(p,cx,cy,sc);
+  ctx3d.save();ctx3d.fillStyle=color;ctx3d.beginPath();ctx3d.arc(pp.sx,pp.sy,r,0,Math.PI*2);ctx3d.fill();ctx3d.restore();
+}
+function arc3d(O,axis,R,color,cx,cy,sc){
+  const perp=perpToAxis(axis),perp2=cross(normalize(axis),perp);
+  ctx3d.save();ctx3d.strokeStyle=color;ctx3d.lineWidth=0.8;ctx3d.globalAlpha=0.2;ctx3d.setLineDash([3,3]);
+  ctx3d.beginPath();
+  for(let i=0;i<=64;i++){const t=(i/64)*Math.PI*2;const p=add(O,add(scale(perp,R*Math.cos(t)),scale(perp2,R*Math.sin(t))));const pp=project(p,cx,cy,sc);if(i===0)ctx3d.moveTo(pp.sx,pp.sy);else ctx3d.lineTo(pp.sx,pp.sy);}
+  ctx3d.stroke();ctx3d.restore();
+}
+function axisArrow3d(O,axis,len,color,cx,cy,sc){
+  const tip=add(O,scale(normalize(axis),len));
+  line3d(O,tip,cx,cy,sc,color,1.5,[5,4]);
+}
+function grid3d(cx,cy,sc){
+  const step=50,ext=400;
+  for(let x=-ext;x<=ext;x+=step) line3d({x,y:0,z:-ext},{x,y:0,z:ext},cx,cy,sc,'#141820',0.5);
+  for(let z=-ext;z<=ext;z+=step) line3d({x:-ext,y:0,z},{x:ext,y:0,z},cx,cy,sc,'#141820',0.5);
 }
 
-function drawLine3d(ctx, a, b, cx, cy, sc, color, lw, dash=[]){
-  const pa = project(a,cx,cy,sc);
-  const pb = project(b,cx,cy,sc);
-  ctx.save();
-  ctx.strokeStyle = color;
-  ctx.lineWidth = lw;
-  ctx.setLineDash(dash);
-  ctx.beginPath();
-  ctx.moveTo(pa.sx, pa.sy);
-  ctx.lineTo(pb.sx, pb.sy);
-  ctx.stroke();
-  ctx.restore();
-}
+let theta1_anim = 146.1;
+let animDir=1, animT=0, animRunning=false, animRAF=null;
 
-function drawDot3d(ctx, p, cx, cy, sc, color, r){
-  const pp = project(p,cx,cy,sc);
-  ctx.save();
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.arc(pp.sx, pp.sy, r, 0, Math.PI*2);
-  ctx.fill();
-  ctx.restore();
+function getAreal(p){
+  const t=theta1_anim*DEG;
+  return {x: p.q*Math.cos(t), y: 0, z: -p.q*Math.sin(t)};
 }
-
-function drawArc3d(ctx, O, axis, R, color, cx, cy, sc){
-  // Dessine une ellipse approximant l'arc de cercle dans l'espace
-  const perp = perpToAxis(axis);
-  const perp2 = cross(normalize(axis), perp);
-  const N=64;
-  ctx.save();
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 1;
-  ctx.globalAlpha = 0.25;
-  ctx.setLineDash([4,4]);
-  ctx.beginPath();
-  for(let i=0;i<=N;i++){
-    const t = (i/N)*Math.PI*2;
-    const p = add(O, add(scale(perp,R*Math.cos(t)), scale(perp2,R*Math.sin(t))));
-    const pp = project(p,cx,cy,sc);
-    if(i===0) ctx.moveTo(pp.sx,pp.sy); else ctx.lineTo(pp.sx,pp.sy);
-  }
-  ctx.stroke();
-  ctx.restore();
-}
-
-function drawAxis3d(ctx, O, axis, len, color, cx, cy, sc){
-  const tip = add(O, scale(normalize(axis), len));
-  drawLine3d(ctx, O, tip, cx, cy, sc, color, 1.5, [6,4]);
-}
-
-function drawGrid3d(ctx, cx, cy, sc){
-  const step=50, ext=500;
-  ctx.save();
-  ctx.strokeStyle = '#1a1e2a';
-  ctx.lineWidth = 0.5;
-  for(let x=-ext;x<=ext;x+=step){
-    drawLine3d(ctx, {x,y:0,z:-ext},{x,y:0,z:ext}, cx,cy,sc, '#1a1e2a', 0.5);
-  }
-  for(let z=-ext;z<=ext;z+=step){
-    drawLine3d(ctx, {x:-ext,y:0,z},{x:ext,y:0,z}, cx,cy,sc, '#1a1e2a', 0.5);
-  }
-  ctx.restore();
-}
-
-let theta1_anim = 146.1; // position de départ
 
 function draw(){
-  const W = canvas3d.width = canvas3d.clientWidth * window.devicePixelRatio;
-  const H = canvas3d.height = canvas3d.clientHeight * window.devicePixelRatio;
-  const cx = W/2, cy = H/2, sc = Math.min(W,H)/650;
-
+  const W=canvas3d.width=canvas3d.clientWidth*window.devicePixelRatio;
+  const H=canvas3d.height=canvas3d.clientHeight*window.devicePixelRatio;
+  const cx=W/2,cy=H/2,sc=Math.min(W,H)/900;
   ctx3d.clearRect(0,0,W,H);
-  ctx3d.fillStyle = '#0a0c10';
-  ctx3d.fillRect(0,0,W,H);
+  ctx3d.fillStyle='#0a0c10';ctx3d.fillRect(0,0,W,H);
+  grid3d(cx,cy,sc);
 
-  drawGrid3d(ctx3d, cx, cy, sc);
-
-  const p = getParams();
-  const {O1,O2,axis1,axis2,R1,R2,L_bielle} = p;
+  const p=getParams();
+  const O1={x:0,y:0,z:0};
+  const A=getAreal(p);
+  const {O2,O3,axis2,axis3,s1,s2,r1,r2} = p;
 
   // Axes des pivots
-  drawAxis3d(ctx3d, O1, axis1, 80, '#00d4ff', cx, cy, sc);
-  drawAxis3d(ctx3d, O2, axis2, 80, '#7fff6b', cx, cy, sc);
+  axisArrow3d(O1,{x:0,y:0,z:1},80,'#00d4ff',cx,cy,sc);
+  axisArrow3d(O2,axis2,80,'#7fff6b',cx,cy,sc);
+  axisArrow3d(O3,axis3,80,'#ff6b8a',cx,cy,sc);
 
-  // Cercles des pivots
-  drawArc3d(ctx3d, O1, axis1, R1, '#00d4ff', cx, cy, sc);
-  drawArc3d(ctx3d, O2, axis2, R2, '#7fff6b', cx, cy, sc);
+  // Cercles de rotation
+  arc3d(O2,axis2,s1,'#7fff6b',cx,cy,sc);
+  arc3d(O3,axis3,s2,'#ff6b8a',cx,cy,sc);
 
-  // Position courante
-  const t1 = theta1_anim * DEG;
-  const A = crankPoint(O1, axis1, R1, t1);
-  const t2raw = solveTheta2(O1,axis1,R1,t1, O2,axis2,R2,L_bielle, undefined);
-  const ok = t2raw !== null;
+  // Manivelle moteur q
+  line3d(O1,A,cx,cy,sc,'#00d4ff',3*sc);
+  dot3d(O1,cx,cy,sc,'#00d4ff',5*sc);
+  dot3d(A,cx,cy,sc,'#fff',4*sc);
 
-  document.getElementById('warnBox').classList.toggle('visible', !ok);
-
-  // Manivelle
-  drawLine3d(ctx3d, O1, A, cx,cy,sc, '#00d4ff', 3*sc);
-  drawDot3d(ctx3d, O1, cx,cy,sc, '#00d4ff', 5*sc);
-  drawDot3d(ctx3d, A, cx,cy,sc, '#fff', 4*sc);
-
-  if(ok){
-    const B = crankPoint(O2, axis2, R2, t2raw);
-    // Bielle
-    drawLine3d(ctx3d, A, B, cx,cy,sc, '#ff9f45', 2.5*sc);
-    // Balancier
-    drawLine3d(ctx3d, O2, B, cx,cy,sc, '#7fff6b', 3*sc);
-    drawDot3d(ctx3d, O2, cx,cy,sc, '#7fff6b', 5*sc);
-    drawDot3d(ctx3d, B, cx,cy,sc, '#fff', 4*sc);
-
-    // Stats
-    document.getElementById('sAngle').textContent = (t2raw/DEG).toFixed(1)+'°';
-
-    // Calcule sweep
-    updateStats(p);
+  // PS
+  const t2=solveOutput(A,O2,axis2,s1,r1,undefined);
+  const okPS=t2!==null;
+  if(okPS){
+    const B1=outputPoint(O2,axis2,s1,t2);
+    line3d(A,B1,cx,cy,sc,'#ff9f45',2.5*sc);
+    line3d(O2,B1,cx,cy,sc,'#7fff6b',3*sc);
+    dot3d(O2,cx,cy,sc,'#7fff6b',5*sc);
+    dot3d(B1,cx,cy,sc,'#fff',4*sc);
+    document.getElementById('sAnglePS').textContent=(t2/DEG).toFixed(1)+'°';
+    document.getElementById('infoPS').textContent=(t2/DEG).toFixed(1)+'°';
   }
 
-  drawCurve(p);
-  drawLabels3d(cx, cy, sc, W, H);
-}
+  // DS
+  const t3=solveOutput(A,O3,axis3,s2,r2,undefined);
+  const okDS=t3!==null;
+  if(okDS){
+    const B2=outputPoint(O3,axis3,s2,t3);
+    line3d(A,B2,cx,cy,sc,'#ff9f45',2.5*sc);
+    line3d(O3,B2,cx,cy,sc,'#ff6b8a',3*sc);
+    dot3d(O3,cx,cy,sc,'#ff6b8a',5*sc);
+    dot3d(B2,cx,cy,sc,'#fff',4*sc);
+    document.getElementById('sAngleDS').textContent=(t3/DEG).toFixed(1)+'°';
+    document.getElementById('infoDS').textContent=(t3/DEG).toFixed(1)+'°';
+  }
 
-function drawLabels3d(cx, cy, sc, W, H){
+  document.getElementById('warnBox').classList.toggle('visible',!okPS||!okDS);
+  document.getElementById('infoT1').textContent=theta1_anim.toFixed(1)+'°';
+
+  // Étiquettes 3D
   ctx3d.save();
-  ctx3d.font = `${11*sc}px 'JetBrains Mono', monospace`;
-  ctx3d.fillStyle = '#4a5268';
-  ctx3d.fillText('θ₁ = '+theta1_anim.toFixed(1)+'°  (départ:146.1° → arrivée:6.1°)', 12*sc, 22*sc);
+  ctx3d.font=`${10*sc}px 'JetBrains Mono',monospace`;
+  ctx3d.fillStyle='#4a5268';
+  ctx3d.fillText('θ₁='+theta1_anim.toFixed(1)+'°  [drag pour tourner]',12*sc,20*sc);
   ctx3d.restore();
+
+  // Courbes
+  const pts=computeCurves(p);
+  updateStats(pts);
+  drawCurve('ccurvePS','#7fff6b',pts,'t2',p.t1start,p.amp);
+  drawCurve('ccurveDS','#ff6b8a',pts,'t3',p.t1start,p.amp);
 }
 
-// ════════════════════════════════════════════════════════════
-//  COURBE θ2(θ1)
-// ════════════════════════════════════════════════════════════
-
-const canvasCurve = document.getElementById('ccurve');
-const ctxC = canvasCurve.getContext('2d');
-
-function drawCurve(p){
-  const W = canvasCurve.width = canvasCurve.clientWidth * window.devicePixelRatio;
-  const H = canvasCurve.height = canvasCurve.clientHeight * window.devicePixelRatio;
-  ctxC.clearRect(0,0,W,H);
-
-  const pts = computeCurve(p);
-  const valid = pts.filter(pt=>pt.t2!==null);
-
-  if(valid.length < 2){
-    ctxC.fillStyle='#ff6060'; ctxC.font=`${10*window.devicePixelRatio}px monospace`;
-    ctxC.fillText('Aucune solution — bielle hors portée',10,H/2);
-    return;
-  }
-
-  const pad = {l:30,r:10,t:6,b:20};
-  const pw = W - pad.l - pad.r, ph = H - pad.t - pad.b;
-
-  // Axes
-  ctxC.strokeStyle='#1e2230'; ctxC.lineWidth=0.5;
-  ctxC.strokeRect(pad.l, pad.t, pw, ph);
-
-  // Grille légère (quarts de la plage)
-  [0.25,0.5,0.75].forEach(frac=>{
-    const sx = pad.l + frac*pw;
-    ctxC.strokeStyle='#1e2230'; ctxC.lineWidth=0.5;
-    ctxC.beginPath(); ctxC.moveTo(sx,pad.t); ctxC.lineTo(sx,pad.t+ph); ctxC.stroke();
-  });
-
-  // Plage Y
-  const t2vals = valid.map(v=>v.t2);
-  const mn = Math.min(...t2vals), mx = Math.max(...t2vals);
-  const range = mx-mn || 1;
-  const padY = range*0.15;
-  const yMin = mn-padY, yMax = mx+padY;
-
-  // Tracé
-  ctxC.save();
-  ctxC.strokeStyle='#ff9f45';
-  ctxC.lineWidth=1.5*window.devicePixelRatio;
-  ctxC.beginPath();
+function drawCurve(canvasId, color, pts, key, t1start, amp){
+  const cv=document.getElementById(canvasId);
+  const W=cv.width=cv.clientWidth*window.devicePixelRatio;
+  const H=cv.height=cv.clientHeight*window.devicePixelRatio;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  const valid=pts.filter(p=>p[key]!==null);
+  if(valid.length<2){ctx.fillStyle='#ff6060';ctx.font=`${9*window.devicePixelRatio}px monospace`;ctx.fillText('Hors portée',10,H/2);return;}
+  const pad={l:28,r:6,t:5,b:18};
+  const pw=W-pad.l-pad.r,ph=H-pad.t-pad.b;
+  ctx.strokeStyle='#1e2230';ctx.lineWidth=0.5;ctx.strokeRect(pad.l,pad.t,pw,ph);
+  [0.25,0.5,0.75].forEach(f=>{const sx=pad.l+f*pw;ctx.strokeStyle='#1e2230';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(sx,pad.t);ctx.lineTo(sx,pad.t+ph);ctx.stroke();});
+  const vals=valid.map(v=>v[key]);
+  const mn=Math.min(...vals),mx=Math.max(...vals);
+  const range=mx-mn||1,padY=range*0.15,yMin=mn-padY,yMax=mx+padY;
+  ctx.save();ctx.strokeStyle=color;ctx.lineWidth=1.5*window.devicePixelRatio;ctx.beginPath();
   let started=false;
   pts.forEach(pt=>{
-    if(pt.t2===null){ started=false; return; }
-    const frac = (pt.t1 - THETA1_START)/(THETA1_END - THETA1_START);
-    const sx = pad.l + frac*pw;
-    const sy = pad.t + ph - ((pt.t2-yMin)/(yMax-yMin))*ph;
-    if(!started){ ctxC.moveTo(sx,sy); started=true; } else ctxC.lineTo(sx,sy);
+    if(pt[key]===null){started=false;return;}
+    const frac=(t1start-pt.deg)/amp;
+    const sx=pad.l+frac*pw;
+    const sy=pad.t+ph-((pt[key]-yMin)/(yMax-yMin))*ph;
+    if(!started){ctx.moveTo(sx,sy);started=true;}else ctx.lineTo(sx,sy);
   });
-  ctxC.stroke();
-  ctxC.restore();
-
-  // Curseur position actuelle
-  const cur = pts.reduce((best,pt)=>Math.abs(pt.t1-theta1_anim)<Math.abs(best.t1-theta1_anim)?pt:best, pts[0]);
-  if(cur && cur.t2!==null){
-    const fracC = (cur.t1 - THETA1_START)/(THETA1_END - THETA1_START);
-    const sx = pad.l + fracC*pw;
-    const sy = pad.t + ph - ((cur.t2-yMin)/(yMax-yMin))*ph;
-    ctxC.save();
-    ctxC.strokeStyle='#00d4ff'; ctxC.lineWidth=0.8*window.devicePixelRatio;
-    ctxC.setLineDash([3,3]);
-    ctxC.beginPath(); ctxC.moveTo(sx,pad.t); ctxC.lineTo(sx,pad.t+ph); ctxC.stroke();
-    ctxC.setLineDash([]);
-    ctxC.fillStyle='#00d4ff';
-    ctxC.beginPath(); ctxC.arc(sx,sy,3*window.devicePixelRatio,0,Math.PI*2); ctxC.fill();
-    ctxC.restore();
+  ctx.stroke();ctx.restore();
+  // Curseur
+  const cur=pts.reduce((b,p)=>Math.abs(p.deg-theta1_anim)<Math.abs(b.deg-theta1_anim)?p:b,pts[0]);
+  if(cur&&cur[key]!==null){
+    const frac=(t1start-cur.deg)/amp;
+    const sx=pad.l+frac*pw;
+    const sy=pad.t+ph-((cur[key]-yMin)/(yMax-yMin))*ph;
+    ctx.save();ctx.strokeStyle='#00d4ff';ctx.lineWidth=0.8*window.devicePixelRatio;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(sx,pad.t);ctx.lineTo(sx,pad.t+ph);ctx.stroke();
+    ctx.setLineDash([]);ctx.fillStyle='#00d4ff';
+    ctx.beginPath();ctx.arc(sx,sy,3*window.devicePixelRatio,0,Math.PI*2);ctx.fill();
+    ctx.restore();
   }
-
-  // Labels axes
-  ctxC.fillStyle='#4a5268';
-  ctxC.font=`${9*window.devicePixelRatio}px 'JetBrains Mono',monospace`;
-  // Labels x = angles d'entrée réels
-  [0,0.25,0.5,0.75,1].forEach((frac,i)=>{
-    const deg = THETA1_START + frac*(THETA1_END-THETA1_START);
-    const label = deg.toFixed(0)+'°';
-    const sx = pad.l + frac*pw;
-    ctxC.fillText(label, sx - (i===4?14:4), pad.t+ph+13*window.devicePixelRatio);
+  // Labels
+  ctx.fillStyle='#4a5268';ctx.font=`${8*window.devicePixelRatio}px 'JetBrains Mono',monospace`;
+  const t1end=t1start-amp;
+  [0,0.25,0.5,0.75,1].forEach((f,i)=>{
+    const deg=(t1start-f*amp).toFixed(0)+'°';
+    ctx.fillText(deg,pad.l+f*pw-(i===4?14:4),pad.t+ph+12*window.devicePixelRatio);
   });
-  ctxC.fillText(mn.toFixed(0)+'°', 2, pad.t+ph);
-  ctxC.fillText(mx.toFixed(0)+'°', 2, pad.t+8*window.devicePixelRatio);
+  ctx.fillText(mn.toFixed(0)+'°',2,pad.t+ph);
+  ctx.fillText(mx.toFixed(0)+'°',2,pad.t+8*window.devicePixelRatio);
 }
 
-// ════════════════════════════════════════════════════════════
-//  STATS
-// ════════════════════════════════════════════════════════════
-
-function updateStats(p){
-  const pts = computeCurve(p);
-  const valid = pts.filter(v=>v.t2!==null).map(v=>v.t2);
-  if(valid.length < 2){
-    ['sSweep','sMin','sMax'].forEach(id=>document.getElementById(id).textContent='—');
-    return;
+function updateStats(pts){
+  const v2=pts.filter(p=>p.t2!==null).map(p=>p.t2);
+  const v3=pts.filter(p=>p.t3!==null).map(p=>p.t3);
+  if(v2.length>1){
+    const mn=Math.min(...v2),mx=Math.max(...v2);
+    document.getElementById('sSweepPS').textContent=(mx-mn).toFixed(1)+'°';
+    document.getElementById('sRangePS').textContent=mn.toFixed(1)+'° / '+mx.toFixed(1)+'°';
   }
-  const mn=Math.min(...valid), mx=Math.max(...valid);
-  document.getElementById('sSweep').textContent=(mx-mn).toFixed(1)+'°';
-  document.getElementById('sMin').textContent=mn.toFixed(1)+'°';
-  document.getElementById('sMax').textContent=mx.toFixed(1)+'°';
+  if(v3.length>1){
+    const mn=Math.min(...v3),mx=Math.max(...v3);
+    document.getElementById('sSweepDS').textContent=(mx-mn).toFixed(1)+'°';
+    document.getElementById('sRangeDS').textContent=mn.toFixed(1)+'° / '+mx.toFixed(1)+'°';
+  }
 }
 
-// ════════════════════════════════════════════════════════════
-//  ANIMATION
-// ════════════════════════════════════════════════════════════
-
-let animRunning = false, animRAF = null;
-document.getElementById('animBtn').addEventListener('click', ()=>{
-  animRunning = !animRunning;
-  const btn = document.getElementById('animBtn');
-  btn.textContent = animRunning ? '⏸ Pause' : '▶ Lancer l\'animation';
-  btn.classList.toggle('active', animRunning);
-  if(animRunning) animLoop();
-  else cancelAnimationFrame(animRAF);
+// ── ANIMATION ──
+document.getElementById('animBtn').addEventListener('click',()=>{
+  animRunning=!animRunning;
+  const btn=document.getElementById('animBtn');
+  btn.textContent=animRunning?'⏸ Pause':'▶ Lancer l\'animation';
+  btn.classList.toggle('active',animRunning);
+  if(animRunning)animLoop();else cancelAnimationFrame(animRAF);
 });
-
-// Oscillement : départ=146.1°, arrivée=6.1°, amplitude=140°
-let animDir = 1; // 1=aller, -1=retour
-let animT = 0;   // paramètre 0..1
-
 function animLoop(){
-  animT += 0.005 * animDir;
-  if(animT >= 1){ animT = 1; animDir = -1; }
-  if(animT <= 0){ animT = 0; animDir =  1; }
-  // Interpolation linéaire départ→arrivée
-  theta1_anim = THETA1_START + animT * (THETA1_END - THETA1_START);
+  animT+=0.004*animDir;
+  if(animT>=1){animT=1;animDir=-1;}
+  if(animT<=0){animT=0;animDir=1;}
+  const p=getParams();
+  theta1_anim=p.t1start-animT*p.amp;
   draw();
-  animRAF = requestAnimationFrame(animLoop);
+  animRAF=requestAnimationFrame(animLoop);
 }
 
-// ════════════════════════════════════════════════════════════
-//  BIND SLIDERS ↔ NUMBER INPUTS (bidirectionnel)
-// ════════════════════════════════════════════════════════════
-
-const sliderMap = [
-  ['r1','r1v'], ['r2','r2v'], ['bl','blv'],
-  ['o1x','o1xv'], ['o1y','o1yv'], ['o1z','o1zv'],
-  ['o2x','o2xv'], ['o2y','o2yv'], ['o2z','o2zv'],
-  ['b1x','b1xv'], ['b1z','b1zv'],
-];
-
-sliderMap.forEach(([sid, vid])=>{
-  const slider = document.getElementById(sid);
-  const numInput = document.getElementById(vid);
-  const mn = parseFloat(slider.min), mx = parseFloat(slider.max);
-
-  // Slider → number input
-  slider.addEventListener('input', ()=>{
-    numInput.value = slider.value;
-    if(!animRunning) draw();
+// ── EXPORT CSV ──
+document.getElementById('exportBtn').addEventListener('click',()=>{
+  const p=getParams();
+  const pts=computeCurves(p);
+  let csv='theta1_deg;theta_PS_deg;theta_DS_deg\n';
+  pts.forEach(pt=>{
+    csv+=pt.deg.toFixed(3)+';'+(pt.t2!==null?pt.t2.toFixed(3):'NA')+';'+(pt.t3!==null?pt.t3.toFixed(3):'NA')+'\n';
   });
-
-  // Number input → slider
-  numInput.addEventListener('input', ()=>{
-    let v = parseFloat(numInput.value);
-    if(isNaN(v)) return;
-    // Clamp to slider range but allow typing beyond temporarily
-    const clamped = Math.min(mx, Math.max(mn, v));
-    slider.value = clamped;
-    if(!animRunning) draw();
-  });
-
-  // On blur: clamp and sync the number input itself
-  numInput.addEventListener('blur', ()=>{
-    let v = parseFloat(numInput.value);
-    if(isNaN(v)) v = parseFloat(slider.value);
-    const clamped = Math.min(mx, Math.max(mn, v));
-    numInput.value = clamped;
-    slider.value = clamped;
-    if(!animRunning) draw();
-  });
-
-  // Enter key confirms
-  numInput.addEventListener('keydown', e=>{
-    if(e.key === 'Enter') numInput.blur();
-  });
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='timonerie_RSSR.csv';a.click();
+  URL.revokeObjectURL(url);
 });
 
-// ════════════════════════════════════════════════════════════
-//  RESIZE + INIT
-// ════════════════════════════════════════════════════════════
+// ── SLIDERS BIDIRECTIONNELS ──
+const sliders=[
+  ['q','qv'],['ax','axv'],['ay','ayv'],['az','azv'],
+  ['t1start','t1startv'],['amp','ampv'],
+  ['r1','r1v'],['s1','s1v'],['o2x','o2xv'],['o2y','o2yv'],['o2z','o2zv'],['inc2','inc2v'],
+  ['r2','r2v'],['s2','s2v'],['o3x','o3xv'],['o3y','o3yv'],['o3z','o3zv'],['inc3','inc3v'],
+];
+sliders.forEach(([sid,vid])=>{
+  const sl=document.getElementById(sid),ni=document.getElementById(vid);
+  const mn=parseFloat(sl.min),mx=parseFloat(sl.max);
+  sl.addEventListener('input',()=>{ni.value=sl.value;if(!animRunning)draw();});
+  ni.addEventListener('input',()=>{const v=parseFloat(ni.value);if(isNaN(v))return;sl.value=Math.min(mx,Math.max(mn,v));if(!animRunning)draw();});
+  ni.addEventListener('blur',()=>{let v=parseFloat(ni.value);if(isNaN(v))v=parseFloat(sl.value);const c=Math.min(mx,Math.max(mn,v));ni.value=c;sl.value=c;if(!animRunning)draw();});
+  ni.addEventListener('keydown',e=>{if(e.key==='Enter')ni.blur();});
+});
 
-window.addEventListener('resize', ()=>{ if(!animRunning) draw(); });
+window.addEventListener('resize',()=>{if(!animRunning)draw();});
 draw();
 </script>
 </body>
