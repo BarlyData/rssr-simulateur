@@ -7,10 +7,10 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&family=Syne:wght@400;700;800&display=swap');
   :root {
-    --bg: #0a0c10; --surface: #111318; --border: #1e2230;
-    --accent: #00d4ff; --accent2: #ff6b35; --accent3: #7fff6b;
-    --text: #c8d0e0; --muted: #4a5268;
-    --moteur: #00d4ff; --bielle: #ff9f45; --ps: #7fff6b; --ds: #ff6b8a;
+    --bg: #f5f0e8; --surface: #ede8de; --border: #c8bfa8;
+    --accent: #1a6b8a; --accent2: #c45c1a; --accent3: #2d7a1f;
+    --text: #2c2416; --muted: #7a6e5a;
+    --moteur: #1a6b8a; --bielle: #c45c1a; --ps: #2d7a1f; --ds: #8a1a4a;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 12px; min-height: 100vh; display: flex; flex-direction: column; }
@@ -40,9 +40,9 @@
   .grp-bielle input[type=number].pval { color: var(--bielle); }
   .grp-bielle input[type=range]::-webkit-slider-thumb { background: var(--bielle); }
   .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-  .stat-card { background: var(--bg); border: 1px solid var(--border); border-radius: 5px; padding: 8px 10px; }
+  .stat-card { background: #fff8f0; border: 1px solid var(--border); border-radius: 5px; padding: 8px 10px; }
   .stat-label { font-size: 8px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); }
-  .stat-value { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800; color: #fff; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800; color: #2c2416; }
   .stat-unit { font-size: 9px; color: var(--muted); }
   .stat-ps { border-left: 2px solid var(--ps); }
   .stat-ds { border-left: 2px solid var(--ds); }
@@ -115,6 +115,9 @@
     <div>
       <div class="section-title">Animation</div>
       <button class="anim-btn" id="animBtn">▶ Lancer l'animation</button>
+      <button class="export-btn" id="vueBtn">⊙ Vue dessus (plan XY)</button>
+      <button class="export-btn" id="vueFaceBtn">⊙ Vue de face (plan XZ)</button>
+      <button class="export-btn" id="vue3dBtn">⊙ Vue 3D par défaut</button>
       <button class="export-btn" id="exportBtn">⬇ Exporter CSV</button>
     </div>
 
@@ -336,8 +339,8 @@ function axisArrow3d(O,axis,len,color,cx,cy,sc){
 }
 function grid3d(cx,cy,sc){
   const step=50,ext=400;
-  for(let x=-ext;x<=ext;x+=step) line3d({x,y:0,z:-ext},{x,y:0,z:ext},cx,cy,sc,'#141820',0.5);
-  for(let z=-ext;z<=ext;z+=step) line3d({x:-ext,y:0,z},{x:ext,y:0,z},cx,cy,sc,'#141820',0.5);
+  for(let x=-ext;x<=ext;x+=step) line3d({x,y:0,z:-ext},{x,y:0,z:ext},cx,cy,sc,'#d4ccba',0.8);
+  for(let z=-ext;z<=ext;z+=step) line3d({x:-ext,y:0,z},{x:ext,y:0,z},cx,cy,sc,'#d4ccba',0.8);
 }
 
 let theta1_anim = 146.1;
@@ -353,7 +356,7 @@ function draw(){
   const H=canvas3d.height=canvas3d.clientHeight*window.devicePixelRatio;
   const cx=W/2,cy=H/2,sc=Math.min(W,H)/900;
   ctx3d.clearRect(0,0,W,H);
-  ctx3d.fillStyle='#0a0c10';ctx3d.fillRect(0,0,W,H);
+  ctx3d.fillStyle='#f5f0e8';ctx3d.fillRect(0,0,W,H);
   grid3d(cx,cy,sc);
 
   const p=getParams();
@@ -407,7 +410,7 @@ function draw(){
   // Étiquettes 3D
   ctx3d.save();
   ctx3d.font=`${10*sc}px 'JetBrains Mono',monospace`;
-  ctx3d.fillStyle='#4a5268';
+  ctx3d.fillStyle='#7a6e5a';
   ctx3d.fillText('θ₁='+theta1_anim.toFixed(1)+'°  [drag pour tourner]',12*sc,20*sc);
   ctx3d.restore();
 
@@ -428,8 +431,8 @@ function drawCurve(canvasId, color, pts, key, t1start, amp){
   if(valid.length<2){ctx.fillStyle='#ff6060';ctx.font=`${9*window.devicePixelRatio}px monospace`;ctx.fillText('Hors portée',10,H/2);return;}
   const pad={l:28,r:6,t:5,b:18};
   const pw=W-pad.l-pad.r,ph=H-pad.t-pad.b;
-  ctx.strokeStyle='#1e2230';ctx.lineWidth=0.5;ctx.strokeRect(pad.l,pad.t,pw,ph);
-  [0.25,0.5,0.75].forEach(f=>{const sx=pad.l+f*pw;ctx.strokeStyle='#1e2230';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(sx,pad.t);ctx.lineTo(sx,pad.t+ph);ctx.stroke();});
+  ctx.strokeStyle='#c8bfa8';ctx.lineWidth=0.5;ctx.strokeRect(pad.l,pad.t,pw,ph);
+  [0.25,0.5,0.75].forEach(f=>{const sx=pad.l+f*pw;ctx.strokeStyle='#c8bfa8';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(sx,pad.t);ctx.lineTo(sx,pad.t+ph);ctx.stroke();});
   const vals=valid.map(v=>v[key]);
   const mn=Math.min(...vals),mx=Math.max(...vals);
   const range=mx-mn||1,padY=range*0.15,yMin=mn-padY,yMax=mx+padY;
@@ -449,14 +452,14 @@ function drawCurve(canvasId, color, pts, key, t1start, amp){
     const frac=(t1start-cur.deg)/amp;
     const sx=pad.l+frac*pw;
     const sy=pad.t+ph-((cur[key]-yMin)/(yMax-yMin))*ph;
-    ctx.save();ctx.strokeStyle='#00d4ff';ctx.lineWidth=0.8*window.devicePixelRatio;ctx.setLineDash([3,3]);
+    ctx.save();ctx.strokeStyle='#1a6b8a';ctx.lineWidth=0.8*window.devicePixelRatio;ctx.setLineDash([3,3]);
     ctx.beginPath();ctx.moveTo(sx,pad.t);ctx.lineTo(sx,pad.t+ph);ctx.stroke();
-    ctx.setLineDash([]);ctx.fillStyle='#00d4ff';
+    ctx.setLineDash([]);ctx.fillStyle='#1a6b8a';
     ctx.beginPath();ctx.arc(sx,sy,3*window.devicePixelRatio,0,Math.PI*2);ctx.fill();
     ctx.restore();
   }
   // Labels
-  ctx.fillStyle='#4a5268';ctx.font=`${8*window.devicePixelRatio}px 'JetBrains Mono',monospace`;
+  ctx.fillStyle='#7a6e5a';ctx.font=`${8*window.devicePixelRatio}px 'JetBrains Mono',monospace`;
   const t1end=t1start-amp;
   [0,0.25,0.5,0.75,1].forEach((f,i)=>{
     const deg=(t1start-f*amp).toFixed(0)+'°';
@@ -512,6 +515,23 @@ document.getElementById('exportBtn').addEventListener('click',()=>{
   const a=document.createElement('a');
   a.href=url;a.download='timonerie_RSSR.csv';a.click();
   URL.revokeObjectURL(url);
+});
+
+// ── BOUTONS DE VUE ──
+document.getElementById('vueBtn').addEventListener('click',()=>{
+  // Vue du dessus : on regarde depuis Y vers le bas → rotX = -PI/2, rotY = 0
+  rotX = -Math.PI/2; rotY = 0;
+  if(!animRunning) draw();
+});
+document.getElementById('vueFaceBtn').addEventListener('click',()=>{
+  // Vue de face : plan XZ → rotX = 0, rotY = 0
+  rotX = 0; rotY = 0;
+  if(!animRunning) draw();
+});
+document.getElementById('vue3dBtn').addEventListener('click',()=>{
+  // Vue 3D par défaut
+  rotX = 0.35; rotY = -0.4;
+  if(!animRunning) draw();
 });
 
 // ── SLIDERS BIDIRECTIONNELS ──
