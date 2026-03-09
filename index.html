@@ -83,7 +83,7 @@
         <div class="param-row"><div class="param-label">A — X<em>rotule manivelle</em></div><input type="range" id="ax" min="-100" max="100" step="0.001" value="19.169"><input type="number" class="pval" id="axv" min="-100" max="100" step="0.001" value="19.169"></div>
         <div class="param-row"><div class="param-label">A — Y</div><input type="range" id="ay" min="-100" max="100" step="0.001" value="20.318"><input type="number" class="pval" id="ayv" min="-100" max="100" step="0.001" value="20.318"></div>
         <div class="param-row"><div class="param-label">A — Z</div><input type="range" id="az" min="-100" max="100" step="0.001" value="-31.586"><input type="number" class="pval" id="azv" min="-100" max="100" step="0.001" value="-31.586"></div>
-        <div class="param-row"><div class="param-label">Départ θ₁<em>degrés</em></div><input type="range" id="t1start" min="90" max="180" step="0.1" value="146.1"><input type="number" class="pval" id="t1startv" min="90" max="180" step="0.1" value="146.1"></div>
+        <div class="param-row"><div class="param-label">Départ θ₁<em>degrés</em></div><input type="range" id="t1start" min="-180" max="180" step="0.1" value="0"><input type="number" class="pval" id="t1startv" min="-180" max="180" step="0.1" value="0"></div>
         <div class="param-row"><div class="param-label">Amplitude<em>degrés</em></div><input type="range" id="amp" min="60" max="180" step="0.1" value="140"><input type="number" class="pval" id="ampv" min="60" max="180" step="0.1" value="140"></div>
       </div>
     </div>
@@ -283,16 +283,15 @@ function computeCurves(p){
   for(let i=0;i<=N;i++){
     const frac=i/N;
     const deg=t1start - frac*amp; // départ → arrivée
-    const t2=solveOutput(A,O2,axis2,s1,r1,prev2);
-    const t3=solveOutput(A,O3,axis3,s2,r2,prev3);
-    // On résout avec le vrai A (fixe pour l'instant — manivelle moteur)
-    // A varie avec theta1 : on recalcule
     const theta1 = deg*DEG;
-    // A est le point d'accroche de q autour de o1 axe Z
+    // A tourne autour de Z pur dans le plan XY
+    const Ax0 = p.A.x, Ay0 = p.A.y, Az0 = p.A.z;
+    const rXY = Math.sqrt(Ax0*Ax0 + Ay0*Ay0);
+    const angle0 = Math.atan2(Ay0, Ax0);
     const Areal = {
-      x: p.q * Math.cos(theta1),
-      y: 0,
-      z: -p.q * Math.sin(theta1)
+      x: rXY * Math.cos(theta1 + angle0),
+      y: rXY * Math.sin(theta1 + angle0),
+      z: Az0
     };
     const t2r = solveOutput(Areal,O2,axis2,s1,r1,prev2);
     const t3r = solveOutput(Areal,O3,axis3,s2,r2,prev3);
@@ -347,8 +346,17 @@ let theta1_anim = 146.1;
 let animDir=1, animT=0, animRunning=false, animRAF=null;
 
 function getAreal(p){
-  const t=theta1_anim*DEG;
-  return {x: p.q*Math.cos(t), y: 0, z: -p.q*Math.sin(t)};
+  const t = theta1_anim * DEG;
+  // A tourne autour de Z pur dans le plan XY
+  // Rayon XY = sqrt(Ax² + Ay²) depuis les coordonnées initiales de A
+  const Ax0 = p.A.x, Ay0 = p.A.y, Az0 = p.A.z;
+  const rXY = Math.sqrt(Ax0*Ax0 + Ay0*Ay0); // rayon dans le plan XY
+  const angle0 = Math.atan2(Ay0, Ax0);        // angle initial de A
+  return {
+    x: rXY * Math.cos(t + angle0),
+    y: rXY * Math.sin(t + angle0),
+    z: Az0  // Z reste constant
+  };
 }
 
 function draw(){
@@ -365,27 +373,27 @@ function draw(){
   const {O2,O3,axis2,axis3,s1,s2,r1,r2} = p;
 
   // Axes des pivots
-  axisArrow3d(O1,{x:0,y:0,z:1},80,'#00d4ff',cx,cy,sc);
-  axisArrow3d(O2,axis2,80,'#7fff6b',cx,cy,sc);
-  axisArrow3d(O3,axis3,80,'#ff6b8a',cx,cy,sc);
+  axisArrow3d(O1,{x:0,y:0,z:1},80,'#1a6b8a',cx,cy,sc);
+  axisArrow3d(O2,axis2,80,'#2d7a1f',cx,cy,sc);
+  axisArrow3d(O3,axis3,80,'#8a1a4a',cx,cy,sc);
 
   // Cercles de rotation
-  arc3d(O2,axis2,s1,'#7fff6b',cx,cy,sc);
-  arc3d(O3,axis3,s2,'#ff6b8a',cx,cy,sc);
+  arc3d(O2,axis2,s1,'#2d7a1f',cx,cy,sc);
+  arc3d(O3,axis3,s2,'#8a1a4a',cx,cy,sc);
 
   // Manivelle moteur q
-  line3d(O1,A,cx,cy,sc,'#00d4ff',3*sc);
-  dot3d(O1,cx,cy,sc,'#00d4ff',5*sc);
-  dot3d(A,cx,cy,sc,'#fff',4*sc);
+  line3d(O1,A,cx,cy,sc,'#1a6b8a',3*sc);
+  dot3d(O1,cx,cy,sc,'#1a6b8a',5*sc);
+  dot3d(A,cx,cy,sc,'#2c2416',4*sc);
 
   // PS
   const t2=solveOutput(A,O2,axis2,s1,r1,undefined);
   const okPS=t2!==null;
   if(okPS){
     const B1=outputPoint(O2,axis2,s1,t2);
-    line3d(A,B1,cx,cy,sc,'#ff9f45',2.5*sc);
-    line3d(O2,B1,cx,cy,sc,'#7fff6b',3*sc);
-    dot3d(O2,cx,cy,sc,'#7fff6b',5*sc);
+    line3d(A,B1,cx,cy,sc,'#c45c1a',2.5*sc);
+    line3d(O2,B1,cx,cy,sc,'#2d7a1f',3*sc);
+    dot3d(O2,cx,cy,sc,'#2d7a1f',5*sc);
     dot3d(B1,cx,cy,sc,'#fff',4*sc);
     document.getElementById('sAnglePS').textContent=(t2/DEG).toFixed(1)+'°';
     document.getElementById('infoPS').textContent=(t2/DEG).toFixed(1)+'°';
@@ -396,9 +404,9 @@ function draw(){
   const okDS=t3!==null;
   if(okDS){
     const B2=outputPoint(O3,axis3,s2,t3);
-    line3d(A,B2,cx,cy,sc,'#ff9f45',2.5*sc);
-    line3d(O3,B2,cx,cy,sc,'#ff6b8a',3*sc);
-    dot3d(O3,cx,cy,sc,'#ff6b8a',5*sc);
+    line3d(A,B2,cx,cy,sc,'#c45c1a',2.5*sc);
+    line3d(O3,B2,cx,cy,sc,'#8a1a4a',3*sc);
+    dot3d(O3,cx,cy,sc,'#8a1a4a',5*sc);
     dot3d(B2,cx,cy,sc,'#fff',4*sc);
     document.getElementById('sAngleDS').textContent=(t3/DEG).toFixed(1)+'°';
     document.getElementById('infoDS').textContent=(t3/DEG).toFixed(1)+'°';
