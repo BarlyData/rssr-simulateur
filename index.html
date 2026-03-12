@@ -3,671 +3,535 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RSSR — Simulation cinématique timonerie essuie-glace</title>
+<title>RSSR - Simulation cinematique timonerie essuie-glace v2.1</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap');
-
   * { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    font-family: 'JetBrains Mono', monospace;
-    background: #0d1117;
-    color: #c9d1d9;
-    padding: 16px;
-    min-height: 100vh;
-  }
-
-  header {
-    border-bottom: 1px solid #1e2a3a;
-    padding-bottom: 12px;
-    margin-bottom: 16px;
-  }
-  header h1 { font-size: 18px; font-weight: 700; color: #e8e8e8; letter-spacing: 1px; }
-  header h1 span { color: #f0a500; }
-  header p { font-size: 11px; color: #5a6a7a; margin-top: 4px; }
-
-  .grid-main {
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-
-  .card {
-    background: #151b28;
-    border-radius: 8px;
-    border: 1px solid #1e2a3a;
-    padding: 16px;
-  }
-  .card-dark { background: #121820; }
-
-  .label {
-    font-size: 10px;
-    color: #5a6a7a;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 8px;
-  }
-
-  .val-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 6px;
-    font-size: 11px;
-  }
-  .val-row:last-child { margin-bottom: 0; }
-
-  .sweep-box {
-    padding: 6px 8px;
-    border-radius: 4px;
-    margin-bottom: 8px;
-  }
-  .sweep-box:last-child { margin-bottom: 0; }
-  .sweep-box .big { font-weight: 700; font-size: 16px; }
-  .sweep-box .sub { font-size: 9px; }
-
-  .ps { color: #ff6b6b; }
-  .ps-bg { background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.2); }
-  .ds { color: #4ecdc4; }
-  .ds-bg { background: rgba(78,205,196,0.1); border: 1px solid rgba(78,205,196,0.2); }
-  .mot { color: #f0a500; }
-
-  .info-stack { display: flex; flex-direction: column; gap: 10px; }
-
-  canvas { border-radius: 6px; cursor: grab; display: block; width: 100%; }
-  canvas:active { cursor: grabbing; }
-
-  .canvas-wrap { position: relative; padding: 8px; }
-  .cam-info {
-    position: absolute; top: 16px; right: 16px;
-    background: rgba(13,17,23,0.85);
-    border-radius: 6px; padding: 6px 10px;
-    font-size: 10px; color: #5a6a7a;
-    border: 1px solid #1e2a3a;
-    pointer-events: none;
-  }
-
-  .controls-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr auto;
-    gap: 16px;
-    align-items: end;
-  }
-  .controls-grid label { font-size: 10px; color: #5a6a7a; display: block; margin-bottom: 4px; }
-  .controls-grid input[type=range] { width: 100%; accent-color: #f0a500; }
-  .range-pair { display: flex; gap: 8px; }
-  .range-pair input { flex: 1; accent-color: #5a6a7a; }
-
-  .btn-anim {
-    background: #f0a500; border: none; border-radius: 6px;
-    padding: 8px 16px; color: #0d1117; font-weight: 700;
-    font-size: 11px; cursor: pointer; font-family: inherit;
-    white-space: nowrap;
-  }
-  .btn-anim.stop { background: #f04550; }
-
-  .btn-toggle {
-    background: #1e2a3a; border: 1px solid #2d3f52;
-    border-radius: 6px; color: #8b99a8; font-size: 10px;
-    padding: 6px 10px; cursor: pointer; text-align: left;
-    font-family: inherit; width: 100%;
-  }
-
-  .params-detail { font-size: 10px; line-height: 1.8; }
-  .params-detail .side { margin-top: 4px; font-weight: 600; }
-
-  .chart-wrap { position: relative; }
-  .chart-wrap canvas { cursor: crosshair; }
-  .chart-tooltip {
-    position: absolute; pointer-events: none;
-    background: #151b28; border: 1px solid #1e2a3a;
-    border-radius: 6px; padding: 6px 10px; font-size: 10px;
-    display: none; z-index: 10;
-  }
-
-  footer {
-    text-align: center; margin-top: 12px;
-    font-size: 9px; color: #3d4f5f;
-  }
-
-  @media (max-width: 800px) {
-    .grid-main { grid-template-columns: 1fr; }
-    .controls-grid { grid-template-columns: 1fr; }
-  }
+  body { font-family:'JetBrains Mono',monospace; background:#0d1117; color:#c9d1d9; padding:16px; min-height:100vh; }
+  header { border-bottom:1px solid #1e2a3a; padding-bottom:12px; margin-bottom:16px; }
+  header h1 { font-size:18px; font-weight:700; color:#e8e8e8; letter-spacing:1px; }
+  header h1 b { color:#f0a500; font-weight:700; }
+  header p { font-size:11px; color:#5a6a7a; margin-top:4px; }
+  .grid-main { display:grid; grid-template-columns:1fr 300px; gap:12px; margin-bottom:12px; }
+  .card { background:#151b28; border-radius:8px; border:1px solid #1e2a3a; padding:16px; }
+  .card-dark { background:#121820; }
+  .label { font-size:10px; color:#5a6a7a; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+  .val-row { display:flex; justify-content:space-between; margin-bottom:6px; font-size:11px; }
+  .val-row:last-child { margin-bottom:0; }
+  .sweep-box { padding:6px 8px; border-radius:4px; margin-bottom:8px; }
+  .sweep-box:last-child { margin-bottom:0; }
+  .sweep-box .big { font-weight:700; font-size:16px; }
+  .sweep-box .target { font-size:9px; margin-top:2px; }
+  .sweep-box .sub { font-size:9px; }
+  .ps { color:#ff6b6b; }
+  .ps-bg { background:rgba(255,107,107,0.1); border:1px solid rgba(255,107,107,0.2); }
+  .ds { color:#4ecdc4; }
+  .ds-bg { background:rgba(78,205,196,0.1); border:1px solid rgba(78,205,196,0.2); }
+  .mot { color:#f0a500; }
+  .ok { color:#3fb950; }
+  .warn { color:#d29922; }
+  .err { color:#f85149; }
+  .info-stack { display:flex; flex-direction:column; gap:10px; }
+  canvas { border-radius:6px; cursor:grab; display:block; width:100%; }
+  canvas:active { cursor:grabbing; }
+  .canvas-wrap { position:relative; padding:8px; }
+  .cam-info { position:absolute; top:16px; right:16px; background:rgba(13,17,23,0.85); border-radius:6px; padding:6px 10px; font-size:10px; color:#5a6a7a; border:1px solid #1e2a3a; pointer-events:none; }
+  .controls-grid { display:grid; grid-template-columns:1fr 1fr auto; gap:16px; align-items:end; }
+  .controls-grid label { font-size:10px; color:#5a6a7a; display:block; margin-bottom:4px; }
+  .controls-grid input[type=range] { width:100%; accent-color:#f0a500; }
+  .range-pair { display:flex; gap:8px; }
+  .range-pair input { flex:1; accent-color:#5a6a7a; }
+  .btn-anim { background:#f0a500; border:none; border-radius:6px; padding:8px 16px; color:#0d1117; font-weight:700; font-size:11px; cursor:pointer; font-family:inherit; white-space:nowrap; }
+  .btn-anim.stop { background:#f04550; }
+  .btn-search { background:#238636; border:none; border-radius:6px; padding:8px 12px; color:#fff; font-weight:700; font-size:10px; cursor:pointer; font-family:inherit; white-space:nowrap; margin-top:4px; }
+  .btn-search:hover { background:#2ea043; }
+  .btn-toggle { background:#1e2a3a; border:1px solid #2d3f52; border-radius:6px; color:#8b99a8; font-size:10px; padding:6px 10px; cursor:pointer; text-align:left; font-family:inherit; width:100%; }
+  .params-detail { font-size:10px; line-height:1.8; }
+  .params-detail .side { margin-top:4px; font-weight:600; }
+  .chart-wrap { position:relative; }
+  .chart-wrap canvas { cursor:crosshair; }
+  .chart-tooltip { position:absolute; pointer-events:none; background:#151b28; border:1px solid #1e2a3a; border-radius:6px; padding:6px 10px; font-size:10px; display:none; z-index:10; }
+  .help-box { font-size:10px; color:#8b99a8; line-height:1.6; padding:8px 10px; background:rgba(240,165,0,0.05); border:1px solid rgba(240,165,0,0.15); border-radius:6px; margin-bottom:12px; }
+  .help-box strong { color:#f0a500; }
+  footer { text-align:center; margin-top:12px; font-size:9px; color:#3d4f5f; }
+  @media (max-width:800px) { .grid-main{grid-template-columns:1fr;} .controls-grid{grid-template-columns:1fr;} }
 </style>
 </head>
 <body>
 
 <header>
-  <h1><span>RSSR</span> — Simulation cinématique timonerie</h1>
-  <p>Mécanisme à 4 barres spatial · Double manivelle-balancier · Essuie-glace automobile</p>
+  <h1><b>RSSR</b> -- Simulation cinematique timonerie v2.1</h1>
+  <p>Mecanisme a 4 barres spatial - Double manivelle-balancier - Essuie-glace automobile - Z corrige + offset axial DS</p>
 </header>
 
+<div class="help-box">
+  <strong>Comment utiliser :</strong>
+  L'essuie-glace au repos a une position angulaire inconnue -- utilisez le slider <strong>Depart</strong> pour la trouver.
+  La <strong>Plage</strong> = 140 deg = amplitude du mouvement moteur.
+  Le <strong>slider principal</strong> fait bouger la manivelle dans cette plage.
+  Cliquez <strong>Chercher optimal</strong> pour trouver automatiquement la position de repos qui correspond aux objectifs PS=79 deg / DS=84.5 deg.
+</div>
+
 <div class="grid-main">
-  <!-- Canvas 3D -->
   <div class="card canvas-wrap">
     <canvas id="cv3d" width="600" height="400"></canvas>
     <div class="cam-info" id="camInfo">Vue 3D</div>
   </div>
-
-  <!-- Info panels -->
   <div class="info-stack">
-    <!-- Instant angles -->
     <div class="card">
-      <div class="label">Angles instantanés</div>
-      <div class="val-row"><span class="mot">θ entrée</span><span class="mot" style="font-weight:700" id="vTheta">0°</span></div>
-      <div class="val-row"><span class="ps">Δφ PS</span><span class="ps" style="font-weight:700" id="vPS">—</span></div>
-      <div class="val-row"><span class="ds">Δφ DS</span><span class="ds" style="font-weight:700" id="vDS">—</span></div>
+      <div class="label">Angles instantanes</div>
+      <div class="val-row"><span class="mot">Theta entree (absolu)</span><span class="mot" style="font-weight:700" id="vTheta">0</span></div>
+      <div class="val-row"><span class="ps">Delta-phi PS</span><span class="ps" style="font-weight:700" id="vPS">--</span></div>
+      <div class="val-row"><span class="ds">Delta-phi DS</span><span class="ds" style="font-weight:700" id="vDS">--</span></div>
     </div>
-
-    <!-- Sweep results -->
     <div class="card card-dark">
-      <div class="label">Angles de balayage (<span id="sweepLbl">140</span>°)</div>
+      <div class="label">Angles de balayage (plage <span id="sweepLbl">140</span> deg)</div>
       <div class="sweep-box ps-bg">
-        <div class="big ps" id="swPS">—</div>
+        <div class="big ps" id="swPS">--</div>
+        <div class="target" id="tgPS">Objectif : 79.00 deg - Ecart : --</div>
         <div class="sub ps" id="swPSr">Balayage PS</div>
       </div>
       <div class="sweep-box ds-bg">
-        <div class="big ds" id="swDS">—</div>
+        <div class="big ds" id="swDS">--</div>
+        <div class="target" id="tgDS">Objectif : 84.50 deg - Ecart : --</div>
         <div class="sub ds" id="swDSr">Balayage DS</div>
       </div>
     </div>
-
-    <!-- Ratios -->
     <div class="card">
       <div class="label">Rapports de transmission</div>
-      <div class="val-row"><span>PS / entrée</span><span style="font-weight:700" id="ratPS">—</span></div>
-      <div class="val-row"><span>DS / entrée</span><span style="font-weight:700" id="ratDS">—</span></div>
+      <div class="val-row"><span>PS / entree</span><span style="font-weight:700" id="ratPS">--</span></div>
+      <div class="val-row"><span>DS / entree</span><span style="font-weight:700" id="ratDS">--</span></div>
     </div>
-
-    <!-- Toggle params -->
-    <button class="btn-toggle" id="btnParams">▶ Paramètres du mécanisme</button>
+    <button class="btn-search" id="btnSearch">Chercher theta-0 optimal (objectifs 79 / 84.5 deg)</button>
+    <div class="card" id="searchResult" style="display:none; font-size:10px; line-height:1.6;"></div>
+    <button class="btn-toggle" id="btnParams">Parametres du mecanisme</button>
     <div class="card params-detail" id="paramsBox" style="display:none">
       <div><span class="mot">q</span> = 45 mm (manivelle moteur)</div>
-      <div class="side ps">Côté PS (passager)</div>
-      <div>p₁ = 296.138 mm · r₁ = 304.1 mm · s₁ = 67 mm</div>
-      <div>Axe: rotation 17.65° / inclinaison 5.48° CW</div>
-      <div class="side ds">Côté DS (conducteur)</div>
-      <div>p₂ = 311.792 mm · r₂ = 308.7 mm · s₂ = 62.7 mm</div>
-      <div>Axe: rotation 0.39° / inclinaison 6.65° CCW</div>
+      <div class="side ps">Cote PS (passager)</div>
+      <div>p1 = 296.138 mm | r1 = 304.1 mm | s1 = 67 mm</div>
+      <div>Offset axial s1 : 0 mm</div>
+      <div>Axe: rotation 17.65 deg / inclinaison 5.48 deg CW</div>
+      <div class="side ds">Cote DS (conducteur)</div>
+      <div>p2 = 311.792 mm | r2 = 308.7 mm | s2 = 62.7 mm</div>
+      <div>Offset axial s2 : <strong style="color:#4ecdc4">17.5 mm</strong></div>
+      <div>Axe: rotation 0.39 deg / inclinaison 6.65 deg CCW</div>
+      <div style="margin-top:6px; color:#5a6a7a">Coordonnees (Z corrige) :</div>
+      <div>O2(PS): +171.1, +241.4, -11.82</div>
+      <div>O3(DS): -142.4, -274.9, -36.69</div>
     </div>
   </div>
 </div>
 
-<!-- Controls -->
 <div class="card" style="margin-bottom:12px">
   <div class="controls-grid">
     <div>
-      <label>Angle d'entrée θ : <span class="mot" style="font-weight:700" id="lTheta">0°</span></label>
+      <label>Position dans la plage : <span class="mot" style="font-weight:700" id="lTheta">0</span> / <span id="lRange2">140</span> deg</label>
       <input type="range" id="slTheta" min="0" max="140" step="0.5" value="0">
     </div>
     <div>
-      <label>Départ θ₀ : <span id="lStart">0</span>° &nbsp;|&nbsp; Plage : <span id="lRange">140</span>°</label>
+      <label>Depart : <span id="lStart">0</span> deg | Plage : <span id="lRange">140</span> deg</label>
       <div class="range-pair">
         <input type="range" id="slStart" min="0" max="220" step="1" value="0">
         <input type="range" id="slRange" min="10" max="180" step="1" value="140">
       </div>
     </div>
-    <button class="btn-anim" id="btnAnim">▶ ANIMER</button>
+    <button class="btn-anim" id="btnAnim">ANIMER</button>
   </div>
 </div>
 
-<!-- Chart -->
 <div class="card chart-wrap">
-  <div class="label">Loi entrée-sortie · Δφ = f(θ)</div>
+  <div class="label">Loi entree-sortie : Delta-phi = f(theta) sur la plage de travail</div>
   <canvas id="cvChart" width="900" height="280"></canvas>
   <div class="chart-tooltip" id="chartTip"></div>
 </div>
 
-<footer>Modèle cinématique RSSR spatial · Équation de Freudenstein généralisée · Résolution analytique</footer>
+<footer>Modele cinematique RSSR spatial | Offset axial integre | Z corrige par mesure directe | v2.1</footer>
 
 <script>
-// ═══════════════════════════════════════════════════════════════
-// VECTOR MATH
-// ═══════════════════════════════════════════════════════════════
-const DEG = Math.PI/180, RAD = 180/Math.PI;
-function cross(a,b){return[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}
-function dot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]}
-function sub(a,b){return[a[0]-b[0],a[1]-b[1],a[2]-b[2]]}
-function add(a,b){return[a[0]+b[0],a[1]+b[1],a[2]+b[2]]}
-function scl(v,s){return[v[0]*s,v[1]*s,v[2]*s]}
-function norm(v){const l=Math.sqrt(dot(v,v));return l>1e-12?[v[0]/l,v[1]/l,v[2]/l]:[0,0,0]}
-function vlen(v){return Math.sqrt(dot(v,v))}
+var DEG = Math.PI/180, RAD = 180/Math.PI;
+
+function cross(a,b){return[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];}
+function dot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];}
+function sub(a,b){return[a[0]-b[0],a[1]-b[1],a[2]-b[2]];}
+function add(a,b){return[a[0]+b[0],a[1]+b[1],a[2]+b[2]];}
+function scl(v,s){return[v[0]*s,v[1]*s,v[2]*s];}
+function norm(v){var l=Math.sqrt(dot(v,v));return l>1e-12?[v[0]/l,v[1]/l,v[2]/l]:[0,0,0];}
 
 function perpBasis(u){
-  const ref=Math.abs(u[0])<0.9?[1,0,0]:[0,1,0];
-  const e=norm(cross(ref,u));
-  const f=norm(cross(u,e));
-  return{e,f};
+  var ref=Math.abs(u[0])<0.9?[1,0,0]:[0,1,0];
+  var e=norm(cross(ref,u));
+  var f=norm(cross(u,e));
+  return{e:e,f:f};
 }
 
-function angDiff(a,b){let d=a-b;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;return d;}
+function angDiff(a,b){var d=a-b;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;return d;}
 
-// ═══════════════════════════════════════════════════════════════
-// RSSR SOLVER
-// ═══════════════════════════════════════════════════════════════
-function solveRSSR(theta,oIn,oOut,qLen,rLen,sLen,uIn,uOut,prevPhi){
-  const{e:e1,f:f1}=perpBasis(uIn);
-  const{e:e2,f:f2}=perpBasis(uOut);
-  const A=add(oIn,add(scl(e1,qLen*Math.cos(theta)),scl(f1,qLen*Math.sin(theta))));
-  const D=sub(A,oOut);
-  const D2=dot(D,D);
-  const K=(D2+sLen*sLen-rLen*rLen)/(2*sLen);
-  const a=dot(D,e2), b=dot(D,f2);
-  const R=Math.sqrt(a*a+b*b);
-  if(Math.abs(K/R)>1)return{phi:null,A,B:null};
-  const alpha=Math.atan2(b,a);
-  const delta=Math.acos(Math.max(-1,Math.min(1,K/R)));
-  const phi1=alpha+delta, phi2=alpha-delta;
-  let phi;
+function solveRSSR(theta,oIn,oOut,qLen,rLen,sLen,uIn,uOut,prevPhi,hIn,hOut){
+  hIn=hIn||0; hOut=hOut||0;
+  var b1=perpBasis(uIn), e1=b1.e, f1=b1.f;
+  var b2=perpBasis(uOut), e2=b2.e, f2=b2.f;
+  var Rin=Math.sqrt(Math.max(0,qLen*qLen-hIn*hIn));
+  var A=add(add(oIn,scl(uIn,hIn)),add(scl(e1,Rin*Math.cos(theta)),scl(f1,Rin*Math.sin(theta))));
+  var Rout=Math.sqrt(Math.max(0,sLen*sLen-hOut*hOut));
+  var oOS=add(oOut,scl(uOut,hOut));
+  var D=sub(A,oOS);
+  var D2=dot(D,D);
+  var K=(D2+Rout*Rout-rLen*rLen)/(2*Rout);
+  var a=dot(D,e2), b=dot(D,f2);
+  var R=Math.sqrt(a*a+b*b);
+  if(Math.abs(K/R)>1)return{phi:null,A:A,B:null};
+  var alpha=Math.atan2(b,a);
+  var delta=Math.acos(Math.max(-1,Math.min(1,K/R)));
+  var phi1=alpha+delta, phi2=alpha-delta;
+  var phi;
   if(prevPhi!==null){
     phi=Math.abs(angDiff(phi1,prevPhi))<Math.abs(angDiff(phi2,prevPhi))?phi1:phi2;
-  } else { phi=phi2; }
-  const B=add(oOut,add(scl(e2,sLen*Math.cos(phi)),scl(f2,sLen*Math.sin(phi))));
-  return{phi,A,B};
+  }else{phi=phi2;}
+  var B=add(oOS,add(scl(e2,Rout*Math.cos(phi)),scl(f2,Rout*Math.sin(phi))));
+  return{phi:phi,A:A,B:B};
 }
 
-// ═══════════════════════════════════════════════════════════════
-// MECHANISM PARAMETERS
-// ═══════════════════════════════════════════════════════════════
-const P = {
+// PARAMETERS
+var P={
   q:45,
   o1:[0,0,0],
-  o2:[-156.219,-220.448,121.227],   // PS  dist 296.138
-  o3:[-118.819,-229.357,174.618],   // DS  dist 311.792
-  r1:304.1, s1:67,
-  r2:308.7, s2:62.7
+  o2:[171.1,241.4,-11.821],
+  o3:[-142.4,-274.9,-36.685],
+  r1:304.1, s1:67, hS1:0,
+  r2:308.7, s2:62.7, hS2:17.5,
+  hQ:0
 };
+var TARGET_PS=79.0, TARGET_DS=84.5;
 
 function computeAxes(){
-  const u1=[0,0,1];
-  // PS axis
-  const aY1=17.65*DEG;
-  const right1=[Math.cos(aY1),Math.sin(aY1),0];
-  const tPS=5.48*DEG;
-  const u2=norm([Math.sin(tPS)*right1[0],Math.sin(tPS)*right1[1],Math.cos(tPS)]);
-  // DS axis
-  const aY2=0.39*DEG;
-  const right2=[Math.cos(aY2),Math.sin(aY2),0];
-  const tDS=6.65*DEG;
-  const u3=norm([-Math.sin(tDS)*right2[0],-Math.sin(tDS)*right2[1],Math.cos(tDS)]);
-  return{u1,u2,u3};
+  var u1=[0,0,1];
+  var aY1=17.65*DEG;
+  var right1=[Math.cos(aY1),Math.sin(aY1),0];
+  var tPS=5.48*DEG;
+  var u2=norm([Math.sin(tPS)*right1[0],Math.sin(tPS)*right1[1],Math.cos(tPS)]);
+  var aY2=0.39*DEG;
+  var right2=[Math.cos(aY2),Math.sin(aY2),0];
+  var tDS=6.65*DEG;
+  var u3=norm([-Math.sin(tDS)*right2[0],-Math.sin(tDS)*right2[1],Math.cos(tDS)]);
+  return{u1:u1,u2:u2,u3:u3};
 }
-const AXES=computeAxes();
+var AXES=computeAxes();
 
-// ═══════════════════════════════════════════════════════════════
-// PRECOMPUTE FULL CURVE (0–360°)
-// ═══════════════════════════════════════════════════════════════
-const CURVE=[];
+// PRECOMPUTE
+var NSTEPS=720;
+var CURVE=[];
 (function(){
-  let prevPS=null, prevDS=null;
-  for(let i=0;i<=360;i++){
-    const th=i*DEG;
-    const rPS=solveRSSR(th,P.o1,P.o2,P.q,P.r1,P.s1,AXES.u1,AXES.u2,prevPS);
-    const rDS=solveRSSR(th,P.o1,P.o3,P.q,P.r2,P.s2,AXES.u1,AXES.u3,prevDS);
-    if(rPS.phi!==null) prevPS=rPS.phi;
-    if(rDS.phi!==null) prevDS=rDS.phi;
-    CURVE.push({
-      thetaDeg:i,
-      phiPS:rPS.phi!==null?rPS.phi*RAD:null,
-      phiDS:rDS.phi!==null?rDS.phi*RAD:null,
-      A:rPS.A, B_PS:rPS.B, B_DS:rDS.B
-    });
+  var prevPS=null,prevDS=null;
+  for(var i=0;i<=NSTEPS;i++){
+    var thDeg=i*360/NSTEPS;
+    var th=thDeg*DEG;
+    var rPS=solveRSSR(th,P.o1,P.o2,P.q,P.r1,P.s1,AXES.u1,AXES.u2,prevPS,P.hQ,P.hS1);
+    var rDS=solveRSSR(th,P.o1,P.o3,P.q,P.r2,P.s2,AXES.u1,AXES.u3,prevDS,P.hQ,P.hS2);
+    if(rPS.phi!==null)prevPS=rPS.phi;
+    if(rDS.phi!==null)prevDS=rDS.phi;
+    CURVE.push({thetaDeg:thDeg,phiPS:rPS.phi!==null?rPS.phi*RAD:null,phiDS:rDS.phi!==null?rDS.phi*RAD:null,A:rPS.A,B_PS:rPS.B,B_DS:rDS.B});
   }
-  const refPS=CURVE[0].phiPS, refDS=CURVE[0].phiDS;
-  for(const d of CURVE){
-    if(d.phiPS!==null) d.deltaPS=d.phiPS-refPS;
-    if(d.phiDS!==null) d.deltaDS=d.phiDS-refDS;
+  var refPS=CURVE[0].phiPS,refDS=CURVE[0].phiDS;
+  for(var j=0;j<CURVE.length;j++){
+    if(CURVE[j].phiPS!==null)CURVE[j].deltaPS=CURVE[j].phiPS-refPS;
+    if(CURVE[j].phiDS!==null)CURVE[j].deltaDS=CURVE[j].phiDS-refDS;
   }
 })();
 
-// ═══════════════════════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════════════════════
-let thetaStart=0, sweepRange=140, thetaCurrent=0;
-let azimuth=-0.6, elevation=0.5;
-let animating=false, animId=null;
-let dragging=false, dragX=0, dragY=0, dragAz=0, dragEl=0;
+function degIdx(deg){return Math.min(Math.max(Math.round(deg*NSTEPS/360),0),NSTEPS);}
 
-// ═══════════════════════════════════════════════════════════════
-// DOM REFS
-// ═══════════════════════════════════════════════════════════════
-const cv3d=document.getElementById('cv3d');
-const ctx3d=cv3d.getContext('2d');
-const cvChart=document.getElementById('cvChart');
-const ctxChart=cvChart.getContext('2d');
-
-const $=id=>document.getElementById(id);
-
-// ═══════════════════════════════════════════════════════════════
-// 3D PROJECTION
-// ═══════════════════════════════════════════════════════════════
-function proj(pt){
-  const W=cv3d.width, H=cv3d.height, cx=W/2, cy=H/2, sc=0.9;
-  const ca=Math.cos(azimuth),sa=Math.sin(azimuth),ce=Math.cos(elevation),se=Math.sin(elevation);
-  const x1=pt[0]*ca+pt[2]*sa;
-  const y1=pt[1];
-  const z1=-pt[0]*sa+pt[2]*ca;
-  const y2=y1*ce-z1*se;
-  return[cx+x1*sc, cy-y2*sc];
+function computeSweep(startDeg,rangeDeg){
+  var i0=degIdx(startDeg),i1=degIdx(Math.min(startDeg+rangeDeg,360));
+  var slice=CURVE.slice(i0,i1+1);
+  var psV=[],dsV=[];
+  for(var i=0;i<slice.length;i++){
+    if(slice[i].deltaPS!=null)psV.push(slice[i].deltaPS);
+    if(slice[i].deltaDS!=null)dsV.push(slice[i].deltaDS);
+  }
+  var minPS=Infinity,maxPS=-Infinity,minDS=Infinity,maxDS=-Infinity;
+  for(var j=0;j<psV.length;j++){if(psV[j]<minPS)minPS=psV[j];if(psV[j]>maxPS)maxPS=psV[j];}
+  for(var k=0;k<dsV.length;k++){if(dsV[k]<minDS)minDS=dsV[k];if(dsV[k]>maxDS)maxDS=dsV[k];}
+  return{
+    sweepPS:psV.length?(maxPS-minPS):0,
+    sweepDS:dsV.length?(maxDS-minDS):0,
+    minPS:psV.length?minPS:0, maxPS:psV.length?maxPS:0,
+    minDS:dsV.length?minDS:0, maxDS:dsV.length?maxDS:0
+  };
 }
 
-// ═══════════════════════════════════════════════════════════════
-// DRAW 3D VIEW
-// ═══════════════════════════════════════════════════════════════
+// STATE
+var thetaStart=0, sweepRange=140, thetaCurrent=0;
+var azimuth=-0.6, elevation=0.5;
+var animating=false, animId=null;
+var dragging=false, dragX=0, dragY=0, dragAz=0, dragEl=0;
+
+// DOM
+var cv3d=document.getElementById('cv3d');
+var ctx3d=cv3d.getContext('2d');
+var cvChart=document.getElementById('cvChart');
+var ctxChart=cvChart.getContext('2d');
+function $(id){return document.getElementById(id);}
+
+// 3D PROJECTION
+function proj(pt){
+  var W=cv3d.width,H=cv3d.height,cx=W/2,cy=H/2,sc=0.85;
+  var ca=Math.cos(azimuth),sa=Math.sin(azimuth),ce=Math.cos(elevation),se=Math.sin(elevation);
+  var x1=pt[0]*ca+pt[2]*sa;
+  var y1=pt[1];
+  var z1=-pt[0]*sa+pt[2]*ca;
+  var y2=y1*ce-z1*se;
+  return[cx+x1*sc,cy-y2*sc];
+}
+
+// DRAW 3D
 function draw3D(){
-  const W=cv3d.width, H=cv3d.height;
+  var W=cv3d.width,H=cv3d.height;
   ctx3d.fillStyle="#0d1117";
   ctx3d.fillRect(0,0,W,H);
+  ctx3d.strokeStyle="#1a2332";ctx3d.lineWidth=0.5;
+  for(var i=0;i<W;i+=30){ctx3d.beginPath();ctx3d.moveTo(i,0);ctx3d.lineTo(i,H);ctx3d.stroke();}
+  for(var j=0;j<H;j+=30){ctx3d.beginPath();ctx3d.moveTo(0,j);ctx3d.lineTo(W,j);ctx3d.stroke();}
 
-  // Grid
-  ctx3d.strokeStyle="#1a2332"; ctx3d.lineWidth=0.5;
-  for(let i=0;i<W;i+=30){ctx3d.beginPath();ctx3d.moveTo(i,0);ctx3d.lineTo(i,H);ctx3d.stroke();}
-  for(let i=0;i<H;i+=30){ctx3d.beginPath();ctx3d.moveTo(0,i);ctx3d.lineTo(W,i);ctx3d.stroke();}
-
-  // Axis lines at pivots
   function drawAx(from,dir,col,lbl){
-    const to=add(from,scl(dir,40));
-    const[x1,y1]=proj(from),[x2,y2]=proj(to);
+    var to=add(from,scl(dir,45));
+    var p1=proj(from),p2=proj(to);
     ctx3d.strokeStyle=col;ctx3d.lineWidth=1;ctx3d.setLineDash([3,3]);
-    ctx3d.beginPath();ctx3d.moveTo(x1,y1);ctx3d.lineTo(x2,y2);ctx3d.stroke();
+    ctx3d.beginPath();ctx3d.moveTo(p1[0],p1[1]);ctx3d.lineTo(p2[0],p2[1]);ctx3d.stroke();
     ctx3d.setLineDash([]);
     ctx3d.fillStyle=col;ctx3d.font="10px 'JetBrains Mono',monospace";
-    ctx3d.fillText(lbl,x2+3,y2-3);
+    ctx3d.fillText(lbl,p2[0]+3,p2[1]-3);
   }
+  drawAx(P.o1,AXES.u1,"#f0a500","Z(o1)");
+  drawAx(P.o2,AXES.u2,"#ff6b6b","u2(o2-PS)");
+  drawAx(P.o3,AXES.u3,"#4ecdc4","u3(o3-DS)");
 
-  drawAx(P.o1,AXES.u1,"#f0a500","Z (o1)");
-  drawAx(P.o2,AXES.u2,"#ff6b6b","u₂ (o2)");
-  drawAx(P.o3,AXES.u3,"#4ecdc4","u₃ (o3)");
-
-  // Bati
-  const po1=proj(P.o1),po2=proj(P.o2),po3=proj(P.o3);
+  var po1=proj(P.o1),po2=proj(P.o2),po3=proj(P.o3);
   ctx3d.strokeStyle="#3d4f5f";ctx3d.lineWidth=2;ctx3d.setLineDash([6,4]);
   ctx3d.beginPath();ctx3d.moveTo(po1[0],po1[1]);ctx3d.lineTo(po2[0],po2[1]);ctx3d.stroke();
   ctx3d.beginPath();ctx3d.moveTo(po1[0],po1[1]);ctx3d.lineTo(po3[0],po3[1]);ctx3d.stroke();
   ctx3d.setLineDash([]);
 
-  // Current mechanism
-  const idx=Math.min(Math.max(Math.round(thetaCurrent+thetaStart),0),360);
-  const cur=CURVE[idx];
-  if(!cur) return;
-
-  const pA=cur.A?proj(cur.A):null;
+  var absTheta=thetaCurrent+thetaStart;
+  var idx=degIdx(absTheta);
+  var cur=CURVE[idx];
+  if(!cur)return;
+  var pA=cur.A?proj(cur.A):null;
   if(pA){
-    // Crank q
     ctx3d.strokeStyle="#f0a500";ctx3d.lineWidth=3;
     ctx3d.beginPath();ctx3d.moveTo(po1[0],po1[1]);ctx3d.lineTo(pA[0],pA[1]);ctx3d.stroke();
-
-    // PS
     if(cur.B_PS){
-      const pB1=proj(cur.B_PS);
+      var pB1=proj(cur.B_PS);
       ctx3d.strokeStyle="#ff6b6b";ctx3d.lineWidth=2.5;
       ctx3d.beginPath();ctx3d.moveTo(pA[0],pA[1]);ctx3d.lineTo(pB1[0],pB1[1]);ctx3d.stroke();
       ctx3d.strokeStyle="#ff8e8e";ctx3d.lineWidth=3;
       ctx3d.beginPath();ctx3d.moveTo(po2[0],po2[1]);ctx3d.lineTo(pB1[0],pB1[1]);ctx3d.stroke();
       ctx3d.fillStyle="#ff6b6b";ctx3d.beginPath();ctx3d.arc(pB1[0],pB1[1],4,0,2*Math.PI);ctx3d.fill();
     }
-    // DS
     if(cur.B_DS){
-      const pB2=proj(cur.B_DS);
+      var pB2=proj(cur.B_DS);
       ctx3d.strokeStyle="#4ecdc4";ctx3d.lineWidth=2.5;
       ctx3d.beginPath();ctx3d.moveTo(pA[0],pA[1]);ctx3d.lineTo(pB2[0],pB2[1]);ctx3d.stroke();
       ctx3d.strokeStyle="#7eddd4";ctx3d.lineWidth=3;
       ctx3d.beginPath();ctx3d.moveTo(po3[0],po3[1]);ctx3d.lineTo(pB2[0],pB2[1]);ctx3d.stroke();
       ctx3d.fillStyle="#4ecdc4";ctx3d.beginPath();ctx3d.arc(pB2[0],pB2[1],4,0,2*Math.PI);ctx3d.fill();
     }
-    // Joint A
     ctx3d.fillStyle="#f0a500";ctx3d.beginPath();ctx3d.arc(pA[0],pA[1],5,0,2*Math.PI);ctx3d.fill();
     ctx3d.strokeStyle="#0d1117";ctx3d.lineWidth=1;ctx3d.beginPath();ctx3d.arc(pA[0],pA[1],5,0,2*Math.PI);ctx3d.stroke();
   }
 
-  // Pivots
   function drawPivot(pos,lbl,col,sz){
-    sz=sz||6;
-    const[px,py]=proj(pos);
-    ctx3d.fillStyle="#0d1117";ctx3d.beginPath();ctx3d.arc(px,py,sz+2,0,2*Math.PI);ctx3d.fill();
-    ctx3d.fillStyle=col;ctx3d.beginPath();ctx3d.arc(px,py,sz,0,2*Math.PI);ctx3d.fill();
-    ctx3d.strokeStyle="#e8e8e8";ctx3d.lineWidth=1.5;ctx3d.beginPath();ctx3d.arc(px,py,sz,0,2*Math.PI);ctx3d.stroke();
+    sz=sz||6;var pp=proj(pos);
+    ctx3d.fillStyle="#0d1117";ctx3d.beginPath();ctx3d.arc(pp[0],pp[1],sz+2,0,2*Math.PI);ctx3d.fill();
+    ctx3d.fillStyle=col;ctx3d.beginPath();ctx3d.arc(pp[0],pp[1],sz,0,2*Math.PI);ctx3d.fill();
+    ctx3d.strokeStyle="#e8e8e8";ctx3d.lineWidth=1.5;ctx3d.beginPath();ctx3d.arc(pp[0],pp[1],sz,0,2*Math.PI);ctx3d.stroke();
     ctx3d.strokeStyle="#0d1117";ctx3d.lineWidth=1.5;
-    ctx3d.beginPath();ctx3d.moveTo(px-3,py-3);ctx3d.lineTo(px+3,py+3);ctx3d.stroke();
-    ctx3d.beginPath();ctx3d.moveTo(px+3,py-3);ctx3d.lineTo(px-3,py+3);ctx3d.stroke();
+    ctx3d.beginPath();ctx3d.moveTo(pp[0]-3,pp[1]-3);ctx3d.lineTo(pp[0]+3,pp[1]+3);ctx3d.stroke();
+    ctx3d.beginPath();ctx3d.moveTo(pp[0]+3,pp[1]-3);ctx3d.lineTo(pp[0]-3,pp[1]+3);ctx3d.stroke();
     ctx3d.fillStyle="#e8e8e8";ctx3d.font="bold 11px 'JetBrains Mono',monospace";
-    ctx3d.fillText(lbl,px+sz+4,py-sz);
+    ctx3d.fillText(lbl,pp[0]+sz+4,pp[1]-sz);
   }
-  drawPivot(P.o1,"O1 (moteur)","#f0a500",7);
-  drawPivot(P.o2,"O2 (PS)","#ff6b6b");
-  drawPivot(P.o3,"O3 (DS)","#4ecdc4");
-
+  drawPivot(P.o1,"O1(moteur)","#f0a500",7);
+  drawPivot(P.o2,"O2(PS)","#ff6b6b");
+  drawPivot(P.o3,"O3(DS)","#4ecdc4");
   ctx3d.font="10px 'JetBrains Mono',monospace";
   ctx3d.fillStyle="#5a6a7a";
   ctx3d.fillText("Glisser pour tourner la vue 3D",10,H-10);
-
-  $('camInfo').textContent=`Vue 3D · Az: ${(azimuth*RAD).toFixed(0)}° · El: ${(elevation*RAD).toFixed(0)}°`;
+  $('camInfo').textContent="Vue 3D | Az:"+(azimuth*RAD).toFixed(0)+" El:"+(elevation*RAD).toFixed(0);
 }
 
-// ═══════════════════════════════════════════════════════════════
 // DRAW CHART
-// ═══════════════════════════════════════════════════════════════
 function drawChart(){
-  const W=cvChart.width, H=cvChart.height;
-  const ml=60, mr=20, mt=10, mb=40;
-  const pw=W-ml-mr, ph=H-mt-mb;
-
-  ctxChart.fillStyle="#0d1117";
-  ctxChart.fillRect(0,0,W,H);
-
-  // Data range
-  const start=Math.round(thetaStart);
-  const end=Math.min(Math.round(thetaStart+sweepRange),360);
-  const data=CURVE.slice(start,end+1);
-  if(data.length<2) return;
-
-  // Y range
-  let yMin=Infinity, yMax=-Infinity;
-  for(const d of data){
-    if(d.deltaPS!=null){yMin=Math.min(yMin,d.deltaPS);yMax=Math.max(yMax,d.deltaPS);}
-    if(d.deltaDS!=null){yMin=Math.min(yMin,d.deltaDS);yMax=Math.max(yMax,d.deltaDS);}
+  var W=cvChart.width,H=cvChart.height;
+  var ml=60,mr=20,mt=10,mb=40;
+  var pw=W-ml-mr,ph=H-mt-mb;
+  ctxChart.fillStyle="#0d1117";ctxChart.fillRect(0,0,W,H);
+  var i0=degIdx(thetaStart),i1=degIdx(Math.min(thetaStart+sweepRange,360));
+  var data=CURVE.slice(i0,i1+1);
+  if(data.length<2)return;
+  var refPS=data[0].deltaPS,refDS=data[0].deltaDS;
+  var yMin=Infinity,yMax=-Infinity;
+  for(var i=0;i<data.length;i++){
+    if(data[i].deltaPS!=null){var v1=data[i].deltaPS-refPS;if(v1<yMin)yMin=v1;if(v1>yMax)yMax=v1;}
+    if(data[i].deltaDS!=null){var v2=data[i].deltaDS-refDS;if(v2<yMin)yMin=v2;if(v2>yMax)yMax=v2;}
   }
-  const yPad=(yMax-yMin)*0.1||5;
-  yMin-=yPad; yMax+=yPad;
+  var yPad=(yMax-yMin)*0.1||5;yMin-=yPad;yMax+=yPad;
+  var xMin=0,xMax=sweepRange;
+  function sx(v){return ml+(v-xMin)/(xMax-xMin)*pw;}
+  function sy(v){return mt+(yMax-v)/(yMax-yMin)*ph;}
 
-  const xMin=0, xMax=sweepRange;
-  const sx=v=>ml+(v-xMin)/(xMax-xMin)*pw;
-  const sy=v=>mt+(yMax-v)/(yMax-yMin)*ph;
-
-  // Grid
   ctxChart.strokeStyle="#1e2a3a";ctxChart.lineWidth=0.5;
-  const xStep=Math.ceil(sweepRange/10/5)*5||10;
-  for(let x=0;x<=xMax;x+=xStep){
-    const px=sx(x);
-    ctxChart.beginPath();ctxChart.moveTo(px,mt);ctxChart.lineTo(px,mt+ph);ctxChart.stroke();
-  }
-  const yStep=Math.ceil((yMax-yMin)/8);
-  for(let y=Math.ceil(yMin);y<=yMax;y+=yStep||1){
-    const py=sy(y);
-    ctxChart.beginPath();ctxChart.moveTo(ml,py);ctxChart.lineTo(ml+pw,py);ctxChart.stroke();
-  }
+  var xStep=Math.ceil(sweepRange/10/5)*5||10;
+  for(var x=0;x<=xMax;x+=xStep){var px=sx(x);ctxChart.beginPath();ctxChart.moveTo(px,mt);ctxChart.lineTo(px,mt+ph);ctxChart.stroke();}
+  var yRange=yMax-yMin;
+  var yStep=yRange>50?10:yRange>20?5:yRange>10?2:1;
+  for(var y=Math.ceil(yMin/yStep)*yStep;y<=yMax;y+=yStep){var py=sy(y);ctxChart.beginPath();ctxChart.moveTo(ml,py);ctxChart.lineTo(ml+pw,py);ctxChart.stroke();}
 
-  // Axes labels
   ctxChart.fillStyle="#5a6a7a";ctxChart.font="10px 'JetBrains Mono',monospace";
-  for(let x=0;x<=xMax;x+=xStep){
-    ctxChart.fillText(x+"°",sx(x)-10,mt+ph+16);
-  }
-  for(let y=Math.ceil(yMin);y<=yMax;y+=yStep||1){
-    ctxChart.fillText(y.toFixed(0)+"°",5,sy(y)+4);
-  }
-  ctxChart.fillText("θ entrée (°)",ml+pw/2-30,H-4);
-  ctxChart.save();
-  ctxChart.translate(12,mt+ph/2+30);
-  ctxChart.rotate(-Math.PI/2);
-  ctxChart.fillText("Δφ sortie (°)",0,0);
-  ctxChart.restore();
+  for(var x2=0;x2<=xMax;x2+=xStep){ctxChart.fillText(x2+"",sx(x2)-10,mt+ph+16);}
+  for(var y2=Math.ceil(yMin/yStep)*yStep;y2<=yMax;y2+=yStep){ctxChart.fillText(y2.toFixed(0),5,sy(y2)+4);}
+  ctxChart.fillText("Position dans la plage (deg)",ml+pw/2-90,H-4);
+  ctxChart.save();ctxChart.translate(12,mt+ph/2+30);ctxChart.rotate(-Math.PI/2);ctxChart.fillText("Delta-phi sortie (deg)",0,0);ctxChart.restore();
 
-  // Lines
-  function drawLine(key,col){
-    ctxChart.strokeStyle=col;ctxChart.lineWidth=2;
-    ctxChart.beginPath();
-    let started=false;
-    for(let i=0;i<data.length;i++){
-      const v=data[i][key];
-      if(v==null)continue;
-      const px=sx(data[i].thetaDeg-start), py=sy(v);
-      if(!started){ctxChart.moveTo(px,py);started=true;}
-      else ctxChart.lineTo(px,py);
+  // Target lines
+  ctxChart.setLineDash([4,4]);
+  if(TARGET_PS>=yMin&&TARGET_PS<=yMax){
+    ctxChart.strokeStyle="rgba(255,107,107,0.3)";ctxChart.lineWidth=1;
+    var tpy=sy(TARGET_PS);ctxChart.beginPath();ctxChart.moveTo(ml,tpy);ctxChart.lineTo(ml+pw,tpy);ctxChart.stroke();
+    ctxChart.fillStyle="rgba(255,107,107,0.5)";ctxChart.fillText("obj PS 79",ml+pw-70,tpy-4);
+  }
+  if(TARGET_DS>=yMin&&TARGET_DS<=yMax){
+    ctxChart.strokeStyle="rgba(78,205,196,0.3)";ctxChart.lineWidth=1;
+    var tdy=sy(TARGET_DS);ctxChart.beginPath();ctxChart.moveTo(ml,tdy);ctxChart.lineTo(ml+pw,tdy);ctxChart.stroke();
+    ctxChart.fillStyle="rgba(78,205,196,0.5)";ctxChart.fillText("obj DS 84.5",ml+pw-75,tdy-4);
+  }
+  ctxChart.setLineDash([]);
+
+  function drawLine(key,refV,col){
+    ctxChart.strokeStyle=col;ctxChart.lineWidth=2;ctxChart.beginPath();var started=false;
+    for(var i=0;i<data.length;i++){
+      var v=data[i][key];if(v==null)continue;
+      var xv=data[i].thetaDeg-thetaStart;var yv=v-refV;
+      var ppx=sx(xv),ppy=sy(yv);
+      if(!started){ctxChart.moveTo(ppx,ppy);started=true;}else{ctxChart.lineTo(ppx,ppy);}
     }
     ctxChart.stroke();
   }
-  drawLine("deltaPS","#ff6b6b");
-  drawLine("deltaDS","#4ecdc4");
+  drawLine("deltaPS",refPS,"#ff6b6b");
+  drawLine("deltaDS",refDS,"#4ecdc4");
 
-  // Current position line
-  const curX=sx(thetaCurrent);
+  var curX=sx(thetaCurrent);
   ctxChart.strokeStyle="#f0a500";ctxChart.lineWidth=1;ctxChart.setLineDash([3,3]);
   ctxChart.beginPath();ctxChart.moveTo(curX,mt);ctxChart.lineTo(curX,mt+ph);ctxChart.stroke();
   ctxChart.setLineDash([]);
 
-  // Legend
   ctxChart.fillStyle="#ff6b6b";ctxChart.fillRect(ml+10,mt+8,12,3);
-  ctxChart.fillStyle="#c9d1d9";ctxChart.fillText("Δφ PS",ml+26,mt+12);
-  ctxChart.fillStyle="#4ecdc4";ctxChart.fillRect(ml+90,mt+8,12,3);
-  ctxChart.fillStyle="#c9d1d9";ctxChart.fillText("Δφ DS",ml+106,mt+12);
+  ctxChart.fillStyle="#c9d1d9";ctxChart.fillText("PS",ml+26,mt+12);
+  ctxChart.fillStyle="#4ecdc4";ctxChart.fillRect(ml+60,mt+8,12,3);
+  ctxChart.fillStyle="#c9d1d9";ctxChart.fillText("DS",ml+76,mt+12);
 }
 
-// ═══════════════════════════════════════════════════════════════
 // UPDATE UI
-// ═══════════════════════════════════════════════════════════════
 function updateUI(){
-  const absTheta=thetaCurrent+thetaStart;
-  const idx=Math.min(Math.max(Math.round(absTheta),0),360);
-  const cur=CURVE[idx]||{};
-
-  $('vTheta').textContent=absTheta.toFixed(1)+"°";
-  $('lTheta').textContent=absTheta.toFixed(1)+"°";
-  $('vPS').textContent=cur.deltaPS!=null?cur.deltaPS.toFixed(2)+"°":"—";
-  $('vDS').textContent=cur.deltaDS!=null?cur.deltaDS.toFixed(2)+"°":"—";
-
-  // Sweep analysis
-  const s=Math.round(thetaStart), e=Math.min(Math.round(thetaStart+sweepRange),360);
-  const range=CURVE.slice(s,e+1);
-  const psV=range.filter(d=>d.deltaPS!=null).map(d=>d.deltaPS);
-  const dsV=range.filter(d=>d.deltaDS!=null).map(d=>d.deltaDS);
-
-  const swPS=psV.length?(Math.max(...psV)-Math.min(...psV)):0;
-  const swDS=dsV.length?(Math.max(...dsV)-Math.min(...dsV)):0;
-  const mnPS=psV.length?Math.min(...psV):0, mxPS=psV.length?Math.max(...psV):0;
-  const mnDS=dsV.length?Math.min(...dsV):0, mxDS=dsV.length?Math.max(...dsV):0;
-
+  var absTheta=thetaCurrent+thetaStart;
+  var idx=degIdx(absTheta);
+  var cur=CURVE[idx]||{};
+  var startIdx=degIdx(thetaStart);
+  var startCur=CURVE[startIdx]||{};
+  var relPS=(cur.deltaPS!=null&&startCur.deltaPS!=null)?cur.deltaPS-startCur.deltaPS:null;
+  var relDS=(cur.deltaDS!=null&&startCur.deltaDS!=null)?cur.deltaDS-startCur.deltaDS:null;
+  $('vTheta').textContent=absTheta.toFixed(1)+" deg";
+  $('lTheta').textContent=thetaCurrent.toFixed(1);
+  $('vPS').textContent=relPS!=null?relPS.toFixed(2)+" deg":"--";
+  $('vDS').textContent=relDS!=null?relDS.toFixed(2)+" deg":"--";
+  var sw=computeSweep(thetaStart,sweepRange);
   $('sweepLbl').textContent=sweepRange;
-  $('swPS').textContent=swPS.toFixed(2)+"°";
-  $('swPSr').textContent=`Balayage PS [${mnPS.toFixed(1)}° → ${mxPS.toFixed(1)}°]`;
-  $('swDS').textContent=swDS.toFixed(2)+"°";
-  $('swDSr').textContent=`Balayage DS [${mnDS.toFixed(1)}° → ${mxDS.toFixed(1)}°]`;
-
-  $('ratPS').textContent=sweepRange>0?(swPS/sweepRange).toFixed(4):"—";
-  $('ratDS').textContent=sweepRange>0?(swDS/sweepRange).toFixed(4):"—";
-
+  $('lRange2').textContent=sweepRange;
+  $('swPS').textContent=sw.sweepPS.toFixed(2)+" deg";
+  $('swDS').textContent=sw.sweepDS.toFixed(2)+" deg";
+  var errPS=sw.sweepPS-TARGET_PS;
+  var errDS=sw.sweepDS-TARGET_DS;
+  var clPS=Math.abs(errPS)<1?"ok":Math.abs(errPS)<3?"warn":"err";
+  var clDS=Math.abs(errDS)<1?"ok":Math.abs(errDS)<3?"warn":"err";
+  $('tgPS').innerHTML="Objectif : 79.00 deg | Ecart : <span class=\""+clPS+"\">"+(errPS>=0?"+":"")+errPS.toFixed(2)+" deg</span>";
+  $('tgDS').innerHTML="Objectif : 84.50 deg | Ecart : <span class=\""+clDS+"\">"+(errDS>=0?"+":"")+errDS.toFixed(2)+" deg</span>";
+  $('swPSr').textContent="Plage ["+sw.minPS.toFixed(1)+" -> "+sw.maxPS.toFixed(1)+"]";
+  $('swDSr').textContent="Plage ["+sw.minDS.toFixed(1)+" -> "+sw.maxDS.toFixed(1)+"]";
+  $('ratPS').textContent=sweepRange>0?(sw.sweepPS/sweepRange).toFixed(4):"--";
+  $('ratDS').textContent=sweepRange>0?(sw.sweepDS/sweepRange).toFixed(4):"--";
   $('lStart').textContent=thetaStart;
   $('lRange').textContent=sweepRange;
-
-  draw3D();
-  drawChart();
+  draw3D();drawChart();
 }
 
-// ═══════════════════════════════════════════════════════════════
-// EVENT HANDLERS
-// ═══════════════════════════════════════════════════════════════
-$('slTheta').addEventListener('input',e=>{
-  thetaCurrent=+e.target.value;
+// AUTO-SEARCH
+function autoSearch(){
+  var bestScore=Infinity,bestStart=0,bestSw=null;
+  for(var s=0;s<=220;s+=0.5){
+    var sw=computeSweep(s,sweepRange);
+    var score=Math.abs(sw.sweepPS-TARGET_PS)+Math.abs(sw.sweepDS-TARGET_DS);
+    if(score<bestScore){bestScore=score;bestStart=s;bestSw=sw;}
+  }
+  thetaStart=bestStart;thetaCurrent=0;
+  $('slStart').value=bestStart;$('slTheta').value=0;
   updateUI();
-});
-$('slStart').addEventListener('input',e=>{
-  thetaStart=+e.target.value;
-  thetaCurrent=0;
-  $('slTheta').min=0;
-  $('slTheta').max=sweepRange;
-  $('slTheta').value=0;
-  updateUI();
-});
-$('slRange').addEventListener('input',e=>{
-  sweepRange=+e.target.value;
-  $('slTheta').max=sweepRange;
+  var ePS=bestSw.sweepPS-TARGET_PS;
+  var eDS=bestSw.sweepDS-TARGET_DS;
+  var box=$('searchResult');box.style.display='block';
+  box.innerHTML="<strong style=\"color:#238636\">Resultat :</strong><br>"
+    +"Theta-0 optimal = <strong class=\"mot\">"+bestStart.toFixed(1)+" deg</strong><br>"
+    +"<span class=\"ps\">PS : "+bestSw.sweepPS.toFixed(2)+" deg (ecart "+(ePS>=0?"+":"")+ePS.toFixed(2)+")</span><br>"
+    +"<span class=\"ds\">DS : "+bestSw.sweepDS.toFixed(2)+" deg (ecart "+(eDS>=0?"+":"")+eDS.toFixed(2)+")</span><br>"
+    +"<span style=\"color:#5a6a7a;font-size:9px\">Erreur totale : "+bestScore.toFixed(2)+" deg</span>";
+}
+
+// EVENTS
+$('slTheta').addEventListener('input',function(e){thetaCurrent=+e.target.value;updateUI();});
+$('slStart').addEventListener('input',function(e){thetaStart=+e.target.value;thetaCurrent=0;$('slTheta').value=0;updateUI();});
+$('slRange').addEventListener('input',function(e){
+  sweepRange=+e.target.value;$('slTheta').max=sweepRange;
   if(thetaCurrent>sweepRange){thetaCurrent=sweepRange;$('slTheta').value=sweepRange;}
   updateUI();
 });
-
-$('btnAnim').addEventListener('click',()=>{
+$('btnAnim').addEventListener('click',function(){
   animating=!animating;
-  $('btnAnim').textContent=animating?"■ STOP":"▶ ANIMER";
+  $('btnAnim').textContent=animating?"STOP":"ANIMER";
   $('btnAnim').className=animating?"btn-anim stop":"btn-anim";
   if(animating){
-    function step(){
-      thetaCurrent+=0.5;
-      if(thetaCurrent>sweepRange) thetaCurrent=0;
-      $('slTheta').value=thetaCurrent;
-      updateUI();
-      if(animating) animId=requestAnimationFrame(step);
-    }
+    function step(){thetaCurrent+=0.5;if(thetaCurrent>sweepRange)thetaCurrent=0;$('slTheta').value=thetaCurrent;updateUI();if(animating)animId=requestAnimationFrame(step);}
     animId=requestAnimationFrame(step);
-  } else {
-    cancelAnimationFrame(animId);
-  }
+  }else{cancelAnimationFrame(animId);}
 });
-
-$('btnParams').addEventListener('click',()=>{
-  const box=$('paramsBox');
-  const show=box.style.display==='none';
+$('btnSearch').addEventListener('click',autoSearch);
+$('btnParams').addEventListener('click',function(){
+  var box=$('paramsBox');var show=box.style.display==='none';
   box.style.display=show?'block':'none';
-  $('btnParams').textContent=(show?"▼":"▶")+" Paramètres du mécanisme";
+  $('btnParams').textContent=(show?"[-] ":"[+] ")+"Parametres du mecanisme";
 });
 
-// 3D rotation drag
-cv3d.addEventListener('mousedown',e=>{
-  dragging=true;dragX=e.clientX;dragY=e.clientY;dragAz=azimuth;dragEl=elevation;
-});
-cv3d.addEventListener('touchstart',e=>{
-  const t=e.touches[0];
-  dragging=true;dragX=t.clientX;dragY=t.clientY;dragAz=azimuth;dragEl=elevation;
-},{passive:true});
-window.addEventListener('mousemove',e=>{
-  if(!dragging)return;
-  azimuth=dragAz+(e.clientX-dragX)*0.01;
-  elevation=Math.max(-1.2,Math.min(1.2,dragEl+(e.clientY-dragY)*0.01));
-  draw3D();
-});
-window.addEventListener('touchmove',e=>{
-  if(!dragging)return;
-  const t=e.touches[0];
-  azimuth=dragAz+(t.clientX-dragX)*0.01;
-  elevation=Math.max(-1.2,Math.min(1.2,dragEl+(t.clientY-dragY)*0.01));
-  draw3D();
-},{passive:true});
-window.addEventListener('mouseup',()=>{dragging=false;});
-window.addEventListener('touchend',()=>{dragging=false;});
+cv3d.addEventListener('mousedown',function(e){dragging=true;dragX=e.clientX;dragY=e.clientY;dragAz=azimuth;dragEl=elevation;});
+cv3d.addEventListener('touchstart',function(e){var t=e.touches[0];dragging=true;dragX=t.clientX;dragY=t.clientY;dragAz=azimuth;dragEl=elevation;},{passive:true});
+window.addEventListener('mousemove',function(e){if(!dragging)return;azimuth=dragAz+(e.clientX-dragX)*0.01;elevation=Math.max(-1.2,Math.min(1.2,dragEl+(e.clientY-dragY)*0.01));draw3D();});
+window.addEventListener('touchmove',function(e){if(!dragging)return;var t=e.touches[0];azimuth=dragAz+(t.clientX-dragX)*0.01;elevation=Math.max(-1.2,Math.min(1.2,dragEl+(t.clientY-dragY)*0.01));draw3D();},{passive:true});
+window.addEventListener('mouseup',function(){dragging=false;});
+window.addEventListener('touchend',function(){dragging=false;});
 
-// Chart hover tooltip
-cvChart.addEventListener('mousemove',e=>{
-  const rect=cvChart.getBoundingClientRect();
-  const scaleX=cvChart.width/rect.width;
-  const mx=(e.clientX-rect.left)*scaleX;
-  const ml2=60,mr2=20,pw2=cvChart.width-ml2-mr2;
-  const rel=(mx-ml2)/pw2;
-  if(rel<0||rel>1){$('chartTip').style.display='none';return;}
-  const thRel=rel*sweepRange;
-  const idx=Math.min(Math.max(Math.round(thRel+thetaStart),0),360);
-  const d=CURVE[idx];
-  if(!d){$('chartTip').style.display='none';return;}
-  const tip=$('chartTip');
-  tip.style.display='block';
-  tip.style.left=(e.clientX-rect.left+12)+'px';
-  tip.style.top=(e.clientY-rect.top-40)+'px';
-  tip.innerHTML=`<span style="color:#f0a500">θ=${d.thetaDeg}°</span><br>`
-    +`<span style="color:#ff6b6b">PS: ${d.deltaPS!=null?d.deltaPS.toFixed(2)+"°":"—"}</span><br>`
-    +`<span style="color:#4ecdc4">DS: ${d.deltaDS!=null?d.deltaDS.toFixed(2)+"°":"—"}</span>`;
+cvChart.addEventListener('mousemove',function(e){
+  var rect=cvChart.getBoundingClientRect();var scaleX=cvChart.width/rect.width;
+  var mx=(e.clientX-rect.left)*scaleX;var ml2=60,pw2=cvChart.width-ml2-20;
+  var rel=(mx-ml2)/pw2;if(rel<0||rel>1){$('chartTip').style.display='none';return;}
+  var thRel=rel*sweepRange;var absT=thRel+thetaStart;var idx=degIdx(absT);
+  var d=CURVE[idx];var s=CURVE[degIdx(thetaStart)];
+  if(!d||!s){$('chartTip').style.display='none';return;}
+  var tip=$('chartTip');tip.style.display='block';
+  tip.style.left=(e.clientX-rect.left+12)+'px';tip.style.top=(e.clientY-rect.top-40)+'px';
+  var rPS=(d.deltaPS!=null&&s.deltaPS!=null)?(d.deltaPS-s.deltaPS):null;
+  var rDS=(d.deltaDS!=null&&s.deltaDS!=null)?(d.deltaDS-s.deltaDS):null;
+  tip.innerHTML="<span class=\"mot\">pos: "+thRel.toFixed(1)+"</span><br>"
+    +"<span class=\"ps\">PS: "+(rPS!=null?rPS.toFixed(2):"--")+"</span><br>"
+    +"<span class=\"ds\">DS: "+(rDS!=null?rDS.toFixed(2):"--")+"</span>";
 });
-cvChart.addEventListener('mouseleave',()=>{$('chartTip').style.display='none';});
+cvChart.addEventListener('mouseleave',function(){$('chartTip').style.display='none';});
 
-// ═══════════════════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════════════════
 updateUI();
 </script>
 </body>
